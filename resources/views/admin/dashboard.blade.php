@@ -13,7 +13,7 @@
                         <i class="fas fa-tachometer-alt me-3"></i>
                         Dashboard
                     </h1>
-                    <p class="text-white-75 mb-0">Welcome back, {{ Auth::user()->name }}!</p>
+                    <p class="text-white-75 mb-0">Welcome back, {{ Auth::user()->name }}! Here's the global overview.</p>
                 </div>
                 <a href="{{ route('home') }}" class="btn btn-light">
                     <i class="fas fa-plus me-2"></i>
@@ -33,7 +33,7 @@
                     </div>
                     <div>
                         <h4 class="mb-0" id="totalUrls">{{ $stats['total_urls'] }}</h4>
-                        <small>Total URLs</small>
+                        <small>Total URLs (All Users)</small>
                     </div>
                 </div>
             </div>
@@ -47,7 +47,7 @@
                     </div>
                     <div>
                         <h4 class="mb-0" id="totalClicks">{{ $stats['total_clicks'] }}</h4>
-                        <small>Total Clicks</small>
+                        <small>Total Clicks (All URLs)</small>
                     </div>
                 </div>
             </div>
@@ -61,7 +61,7 @@
                     </div>
                     <div>
                         <h4 class="mb-0" id="urlsToday">{{ $stats['urls_today'] }}</h4>
-                        <small>URLs Today</small>
+                        <small>URLs Created Today</small>
                     </div>
                 </div>
             </div>
@@ -75,7 +75,7 @@
                     </div>
                     <div>
                         <h4 class="mb-0" id="avgClicks">{{ $stats['total_urls'] > 0 ? round($stats['total_clicks'] / $stats['total_urls'], 1) : 0 }}</h4>
-                        <small>Avg. Clicks</small>
+                        <small>Global Avg. Clicks</small>
                     </div>
                 </div>
             </div>
@@ -89,7 +89,7 @@
                 <div class="card-header bg-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
                         <i class="fas fa-list me-2 text-primary"></i>
-                        Your URLs
+                        All URLs
                     </h5>
                     <div class="d-flex gap-2">
                         <div class="input-group" style="width: 300px;">
@@ -111,6 +111,7 @@
                                 <tr>
                                     <th>Title</th>
                                     <th>Short URL</th>
+                                    <th>User</th>
                                     <th>Clicks</th>
                                     <th>Created</th>
                                     <th>Actions</th>
@@ -134,6 +135,20 @@
                                                 <i class="fas fa-copy"></i>
                                             </button>
                                         </div>
+                                    </td>
+                                    <td>
+                                        @if($url->user)
+                                            <div>
+                                                <strong>{{ $url->user->name }}</strong>
+                                                <br>
+                                                <small class="text-muted">{{ $url->user->email }}</small>
+                                            </div>
+                                        @else
+                                            <span class="text-muted">
+                                                <i class="fas fa-user-slash me-1"></i>
+                                                Guest User
+                                            </span>
+                                        @endif
                                     </td>
                                     <td>
                                         <span class="badge bg-primary">{{ $url->clicks }}</span>
@@ -187,6 +202,11 @@
                             <div class="flex-grow-1">
                                 <div class="fw-semibold">{{ $url->title ?: 'Untitled' }}</div>
                                 <small class="text-muted">{{ $url->clicks }} clicks</small>
+                                @if($url->user)
+                                    <br><small class="text-info">by {{ $url->user->name }}</small>
+                                @else
+                                    <br><small class="text-muted">by Guest User</small>
+                                @endif
                             </div>
                         </div>
                         @endforeach
@@ -324,6 +344,10 @@ function updateUrlsTable(urls) {
     tbody.empty();
     
     urls.forEach(url => {
+        const userDisplay = url.user 
+            ? `<div><strong>${url.user.name}</strong><br><small class="text-muted">${url.user.email}</small></div>`
+            : `<span class="text-muted"><i class="fas fa-user-slash me-1"></i>Guest User</span>`;
+            
         const row = `
             <tr data-url-id="${url.id}">
                 <td>
@@ -341,6 +365,9 @@ function updateUrlsTable(urls) {
                             <i class="fas fa-copy"></i>
                         </button>
                     </div>
+                </td>
+                <td>
+                    ${userDisplay}
                 </td>
                 <td>
                     <span class="badge bg-primary">${url.clicks}</span>
@@ -451,6 +478,17 @@ function exportUrls() {
         title: 'Export URLs',
         text: 'This feature will be available soon!',
         icon: 'info'
+    });
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
     });
 }
 </script>

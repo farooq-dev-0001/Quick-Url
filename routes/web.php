@@ -33,6 +33,9 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::post('/shorten', [UrlController::class, 'shorten'])->name('url.shorten');
 Route::get('/stats/{shortCode}', [UrlController::class, 'stats'])->name('url.stats');
 
+// API endpoint for creating short URLs (no api prefix)
+Route::post('/create-short-link', [UrlController::class, 'apiShorten'])->name('url.api.shorten');
+
 // Admin dashboard routes
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');

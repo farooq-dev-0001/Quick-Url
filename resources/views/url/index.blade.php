@@ -32,7 +32,16 @@
                         </div>
                         
                         <div class="row">
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-4 mb-3">
+                                <label for="prefix" class="form-label fw-semibold">
+                                    <i class="fas fa-hashtag me-2 text-info"></i>
+                                    Custom Prefix (Optional)
+                                </label>
+                                <input type="text" class="form-control" id="prefix" name="prefix" 
+                                       placeholder="myprefix" maxlength="20" pattern="[a-zA-Z0-9_-]+">
+                                <small class="text-muted">Only letters, numbers, hyphens, and underscores allowed</small>
+                            </div>
+                            <div class="col-md-4 mb-3">
                                 <label for="title" class="form-label fw-semibold">
                                     <i class="fas fa-tag me-2 text-success"></i>
                                     Custom Title (Optional)
@@ -40,13 +49,20 @@
                                 <input type="text" class="form-control" id="title" name="title" 
                                        placeholder="My awesome link">
                             </div>
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-4 mb-3">
                                 <label for="expires_at" class="form-label fw-semibold">
                                     <i class="fas fa-clock me-2 text-warning"></i>
                                     Expires At (Optional)
                                 </label>
                                 <input type="datetime-local" class="form-control" id="expires_at" name="expires_at">
                             </div>
+                        </div>
+                        
+                        <!-- Short Code Preview -->
+                        <div id="shortCodePreview" class="alert alert-info mb-3" style="display: none;">
+                            <i class="fas fa-eye me-2"></i>
+                            <strong>Preview:</strong> Your short URL will look like: 
+                            <code id="previewUrl"></code>
                         </div>
                         
                         <div class="d-grid">
@@ -176,6 +192,29 @@
 $(document).ready(function() {
     let currentShortCode = null;
     
+    // Prefix validation
+    $('#prefix').on('input', function() {
+        const prefix = $(this).val();
+        const regex = /^[a-zA-Z0-9_-]*$/;
+        
+        if (prefix && !regex.test(prefix)) {
+            $(this).addClass('is-invalid');
+            if (!$(this).siblings('.invalid-feedback').length) {
+                $(this).after('<div class="invalid-feedback">Only letters, numbers, hyphens, and underscores are allowed</div>');
+            }
+        } else {
+            $(this).removeClass('is-invalid');
+            $(this).siblings('.invalid-feedback').remove();
+        }
+        
+        // Show preview of short code
+        if (prefix && regex.test(prefix)) {
+            updateShortCodePreview(prefix);
+        } else {
+            $('#shortCodePreview').hide();
+        }
+    });
+    
     // Form submission
     $('#shortenForm').on('submit', function(e) {
         e.preventDefault();
@@ -192,9 +231,12 @@ $(document).ready(function() {
                     currentShortCode = response.data.short_code;
                     displayResult(response.data);
                     
+                    // Check if this is an existing URL or a new one
+                    const isExisting = response.message.includes('already exists');
+                    
                     Swal.fire({
-                        icon: 'success',
-                        title: 'Success!',
+                        icon: isExisting ? 'info' : 'success',
+                        title: isExisting ? 'URL Found!' : 'Success!',
                         text: response.message,
                         timer: 2000,
                         showConfirmButton: false
@@ -292,5 +334,12 @@ $(document).ready(function() {
         }
     };
 });
+
+function updateShortCodePreview(prefix) {
+    const baseUrl = window.location.origin;
+    const previewUrl = `${baseUrl}/${prefix}-XXXXXX`;
+    $('#previewUrl').text(previewUrl);
+    $('#shortCodePreview').show();
+}
 </script>
 @endpush

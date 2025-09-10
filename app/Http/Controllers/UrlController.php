@@ -19,12 +19,61 @@ class UrlController extends Controller
         $request->validate([
             'url' => 'required|url|max:2048',
             'title' => 'nullable|string|max:255',
+            'prefix' => 'nullable|string|max:20|regex:/^[a-zA-Z0-9_-]+$/',
             'expires_at' => 'nullable|date|after:now'
         ]);
 
-        // Generate unique short code
+        // Check if URL already exists
+        $query = Url::where('original_url', $request->url);
+
+        if (Auth::check()) {
+            // For authenticated users, check by user_id
+            $query->where('user_id', Auth::id());
+        } else {
+            // For guest users, check by IP address or session
+            $query->where(function ($q) use ($request) {
+                $q->whereNull('user_id')
+                    ->where('created_ip', $request->ip());
+            });
+        }
+
+        $existingUrl = $query->first();
+
+        if ($existingUrl) {
+            // Update existing URL with new data if provided
+            $updateData = [];
+
+            if ($request->title && $request->title !== $existingUrl->title) {
+                $updateData['title'] = $request->title;
+            }
+
+            if ($request->expires_at && $request->expires_at !== $existingUrl->expires_at) {
+                $updateData['expires_at'] = $request->expires_at;
+            }
+
+            // Update the existing URL if there are changes
+            if (!empty($updateData)) {
+                $existingUrl->update($updateData);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'URL already exists! Returning your existing short URL.',
+                'data' => [
+                    'short_url' => $existingUrl->getShortUrl(),
+                    'original_url' => $existingUrl->original_url,
+                    'title' => $existingUrl->title,
+                    'short_code' => $existingUrl->short_code,
+                    'clicks' => $existingUrl->clicks,
+                    'created_at' => $existingUrl->created_at->format('M d, Y H:i')
+                ]
+            ]);
+        }
+
+        // Generate unique short code for new URL
         do {
-            $shortCode = Str::random(6);
+            $randomCode = Str::random(6);
+            $shortCode = $request->prefix ? $request->prefix . '-' . $randomCode : $randomCode;
         } while (Url::where('short_code', $shortCode)->exists());
 
         // Get page title if not provided
@@ -38,6 +87,7 @@ class UrlController extends Controller
             'short_code' => $shortCode,
             'title' => $title,
             'user_id' => Auth::id(),
+            'created_ip' => $request->ip(),
             'expires_at' => $request->expires_at
         ]);
 
@@ -114,5 +164,70 @@ class UrlController extends Controller
         }
 
         return parse_url($url, PHP_URL_HOST) ?: 'Shortened URL';
+    }
+
+    /**
+     * API endpoint to create short URL (returns only the short link)
+     */
+    public function apiShorten(Request $request)
+    {
+        $request->validate([
+            'url' => 'required|url|max:2048',
+            'title' => 'nullable|string|max:255',
+            'prefix' => 'nullable|string|max:20|regex:/^[a-zA-Z0-9_-]+$/',
+            'expires_at' => 'nullable|date|after:now'
+        ]);
+
+        // Check if URL already exists
+        $query = Url::where('original_url', $request->url);
+
+        if (Auth::check()) {
+            // For authenticated users, check by user_id
+            $query->where('user_id', Auth::id());
+        } else {
+            // For guest users, check by IP address
+            $query->where(function ($q) use ($request) {
+                $q->whereNull('user_id')
+                    ->where('created_ip', $request->ip());
+            });
+        }
+
+        $existingUrl = $query->first();
+
+        if ($existingUrl) {
+            // Return existing short URL
+            return response()->json([
+                'success' => true,
+                'short_url' => $existingUrl->getShortUrl(),
+                'message' => 'URL already exists, returning existing short link'
+            ]);
+        }
+
+        // Generate unique short code for new URL
+        do {
+            $randomCode = Str::random(6);
+            $shortCode = $request->prefix ? $request->prefix . '-' . $randomCode : $randomCode;
+        } while (Url::where('short_code', $shortCode)->exists());
+
+        // Get page title if not provided
+        $title = $request->title;
+        if (!$title) {
+            $title = $this->extractTitle($request->url);
+        }
+
+        $url = Url::create([
+            'original_url' => $request->url,
+            'short_code' => $shortCode,
+            'title' => $title,
+            'user_id' => Auth::id(),
+            'created_ip' => $request->ip(),
+            'expires_at' => $request->expires_at
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'short_url' => $url->getShortUrl(),
+            'message' => 'Short URL created successfully'
+        ]);
     }
 }

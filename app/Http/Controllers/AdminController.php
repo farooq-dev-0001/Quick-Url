@@ -16,14 +16,14 @@ class AdminController extends Controller
 
     public function dashboard()
     {
-        $user = Auth::user();
-        $urls = $user->urls()->latest()->paginate(10);
+        // Show all URLs instead of just user's URLs
+        $urls = Url::with('user')->latest()->paginate(10);
 
         $stats = [
-            'total_urls' => $user->urls()->count(),
-            'total_clicks' => $user->urls()->sum('clicks'),
-            'urls_today' => $user->urls()->whereDate('created_at', today())->count(),
-            'top_urls' => $user->urls()->orderBy('clicks', 'desc')->limit(5)->get()
+            'total_urls' => Url::count(),
+            'total_clicks' => Url::sum('clicks'),
+            'urls_today' => Url::whereDate('created_at', today())->count(),
+            'top_urls' => Url::with('user')->orderBy('clicks', 'desc')->limit(5)->get()
         ];
 
         return view('admin.dashboard', compact('urls', 'stats'));
@@ -31,14 +31,18 @@ class AdminController extends Controller
 
     public function getUrls(Request $request)
     {
-        $user = Auth::user();
-        $query = $user->urls();
+        // Show all URLs instead of just user's URLs
+        $query = Url::with('user');
 
         if ($request->search) {
             $query->where(function ($q) use ($request) {
                 $q->where('title', 'like', '%' . $request->search . '%')
                     ->orWhere('original_url', 'like', '%' . $request->search . '%')
-                    ->orWhere('short_code', 'like', '%' . $request->search . '%');
+                    ->orWhere('short_code', 'like', '%' . $request->search . '%')
+                    ->orWhereHas('user', function ($userQuery) use ($request) {
+                        $userQuery->where('name', 'like', '%' . $request->search . '%')
+                            ->orWhere('email', 'like', '%' . $request->search . '%');
+                    });
             });
         }
 
@@ -65,8 +69,8 @@ class AdminController extends Controller
 
     public function deleteUrl($id)
     {
-        $user = Auth::user();
-        $url = $user->urls()->findOrFail($id);
+        // Allow admin to delete any URL
+        $url = Url::findOrFail($id);
 
         $url->delete();
 
@@ -83,8 +87,8 @@ class AdminController extends Controller
             'expires_at' => 'nullable|date|after:now'
         ]);
 
-        $user = Auth::user();
-        $url = $user->urls()->findOrFail($id);
+        // Allow admin to update any URL
+        $url = Url::findOrFail($id);
 
         $url->update($request->only(['title', 'expires_at']));
 
@@ -97,18 +101,17 @@ class AdminController extends Controller
 
     public function getStats()
     {
-        $user = Auth::user();
-
+        // Show global stats instead of user-specific
         $stats = [
-            'total_urls' => $user->urls()->count(),
-            'total_clicks' => $user->urls()->sum('clicks'),
-            'urls_today' => $user->urls()->whereDate('created_at', today())->count(),
-            'urls_this_month' => $user->urls()->whereMonth('created_at', now()->month)->count(),
-            'top_urls' => $user->urls()->select(['title', 'short_code', 'clicks', 'original_url'])
+            'total_urls' => Url::count(),
+            'total_clicks' => Url::sum('clicks'),
+            'urls_today' => Url::whereDate('created_at', today())->count(),
+            'urls_this_month' => Url::whereMonth('created_at', now()->month)->count(),
+            'top_urls' => Url::with('user')->select(['title', 'short_code', 'clicks', 'original_url', 'user_id'])
                 ->orderBy('clicks', 'desc')
                 ->limit(5)
                 ->get(),
-            'recent_urls' => $user->urls()->select(['title', 'short_code', 'clicks', 'created_at'])
+            'recent_urls' => Url::with('user')->select(['title', 'short_code', 'clicks', 'created_at', 'user_id'])
                 ->latest()
                 ->limit(5)
                 ->get()

@@ -16,6 +16,7 @@ class Url extends Model
         'title',
         'clicks',
         'user_id',
+        'created_ip',
         'expires_at'
     ];
 
