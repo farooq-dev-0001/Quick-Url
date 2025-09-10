@@ -88,7 +88,7 @@
     }
     
     .swiper-slide {
-        background: linear-gradient(135deg, #8b5cf6, #a855f7);
+        /* background: linear-gradient(135deg, #8b5cf6, #a855f7); */
         border-radius: 8px;
         padding: 12px;
         color: white;
@@ -362,14 +362,14 @@
     <div class="dashboard-header">
         <div class="d-flex justify-content-between align-items-center">
             <div>
-                <h1 class="mb-2">
-                    <i class="fas fa-tachometer-alt me-3"></i>
+                <h4 class="mb-1">
+                    <i class="fas fa-tachometer-alt me-2"></i>
                     Dashboard
-                </h1>
-                <p class="mb-0 opacity-75">Welcome back, {{ Auth::user()->name }}! Here's your URL management overview.</p>
+                </h4>
+                <p class="mb-0 opacity-75" style="font-size: 0.85rem;">Welcome back, {{ Auth::user()->name }}! Here's your URL management overview.</p>
             </div>
-            <a href="{{ route('home') }}" class="btn btn-light btn-lg">
-                <i class="fas fa-plus me-2"></i>
+            <a href="{{ route('home') }}" class="btn btn-light btn-sm">
+                <i class="fas fa-plus me-1"></i>
                 Create New URL
             </a>
         </div>
@@ -377,54 +377,90 @@
     
     <!-- Stats Cards -->
     <div class="row mb-3">
-        <div class="col-lg-3 col-md-6 mb-2">
-            <div class="stats-card">
-                <div class="stats-icon total-urls">
-                    <i class="fas fa-link"></i>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stats-card position-relative overflow-hidden">
+                <div class="row align-items-center">
+                    <div class="col-8">
+                        <h3 class="fw-bold mb-1 text-primary" id="totalUrls">{{ $stats['total_urls'] }}</h3>
+                        <p class="text-muted mb-0 fw-medium">Total URLs</p>
+                        <small class="text-success"><i class="fas fa-arrow-up me-1"></i>Active</small>
+                    </div>
+                    <div class="col-4 text-end">
+                        <div class="stats-icon total-urls border-0 shadow-sm">
+                            <i class="fas fa-link"></i>
+                        </div>
+                    </div>
                 </div>
-                <h5 class="fw-bold mb-1" id="totalUrls">{{ $stats['total_urls'] }}</h5>
-                <p class="text-muted mb-0" style="font-size: 0.8rem;">Total URLs</p>
-                <small class="text-success" style="font-size: 0.7rem;"><i class="fas fa-arrow-up me-1"></i>All Users</small>
+                <div class="position-absolute top-0 end-0 p-2">
+                    <div class="bg-primary bg-opacity-10 rounded-circle" style="width: 60px; height: 60px; transform: translate(20px, -20px);"></div>
+                </div>
             </div>
         </div>
         
-        <div class="col-lg-3 col-md-6 mb-2">
-            <div class="stats-card">
-                <div class="stats-icon total-clicks">
-                    <i class="fas fa-mouse-pointer"></i>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stats-card position-relative overflow-hidden">
+                <div class="row align-items-center">
+                    <div class="col-8">
+                        <h3 class="fw-bold mb-1 text-success" id="totalClicks">{{ $stats['total_clicks'] }}</h3>
+                        <p class="text-muted mb-0 fw-medium">Total Clicks</p>
+                        <small class="text-success"><i class="fas fa-mouse-pointer me-1"></i>All Time</small>
+                    </div>
+                    <div class="col-4 text-end">
+                        <div class="stats-icon total-clicks border-0 shadow-sm">
+                            <i class="fas fa-hand-pointer"></i>
+                        </div>
+                    </div>
                 </div>
-                <h5 class="fw-bold mb-1" id="totalClicks">{{ $stats['total_clicks'] }}</h5>
-                <p class="text-muted mb-0" style="font-size: 0.8rem;">Total Clicks</p>
-                <small class="text-success" style="font-size: 0.7rem;"><i class="fas fa-arrow-up me-1"></i>All URLs</small>
+                <div class="position-absolute top-0 end-0 p-2">
+                    <div class="bg-success bg-opacity-10 rounded-circle" style="width: 60px; height: 60px; transform: translate(20px, -20px);"></div>
+                </div>
             </div>
         </div>
         
-        <div class="col-lg-3 col-md-6 mb-2">
-            <div class="stats-card">
-                <div class="stats-icon urls-today">
-                    <i class="fas fa-calendar-day"></i>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stats-card position-relative overflow-hidden">
+                <div class="row align-items-center">
+                    <div class="col-8">
+                        <h3 class="fw-bold mb-1 text-warning" id="urlsToday">{{ $stats['urls_today'] }}</h3>
+                        <p class="text-muted mb-0 fw-medium">URLs Today</p>
+                        <small class="text-warning"><i class="fas fa-calendar-day me-1"></i>24 Hours</small>
+                    </div>
+                    <div class="col-4 text-end">
+                        <div class="stats-icon urls-today border-0 shadow-sm">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                    </div>
                 </div>
-                <h5 class="fw-bold mb-1" id="urlsToday">{{ $stats['urls_today'] }}</h5>
-                <p class="text-muted mb-0" style="font-size: 0.8rem;">URLs Today</p>
-                <small class="text-info" style="font-size: 0.7rem;"><i class="fas fa-clock me-1"></i>Last 24h</small>
+                <div class="position-absolute top-0 end-0 p-2">
+                    <div class="bg-warning bg-opacity-10 rounded-circle" style="width: 60px; height: 60px; transform: translate(20px, -20px);"></div>
+                </div>
             </div>
         </div>
         
-        <div class="col-lg-3 col-md-6 mb-2">
-            <div class="stats-card">
-                <div class="stats-icon avg-clicks">
-                    <i class="fas fa-chart-line"></i>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stats-card position-relative overflow-hidden">
+                <div class="row align-items-center">
+                    <div class="col-8">
+                        <h3 class="fw-bold mb-1 text-info" id="avgClicks">{{ $stats['total_urls'] > 0 ? round($stats['total_clicks'] / $stats['total_urls'], 1) : 0 }}</h3>
+                        <p class="text-muted mb-0 fw-medium">Avg. Clicks</p>
+                        <small class="text-info"><i class="fas fa-chart-bar me-1"></i>Per URL</small>
+                    </div>
+                    <div class="col-4 text-end">
+                        <div class="stats-icon avg-clicks border-0 shadow-sm">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
                 </div>
-                <h5 class="fw-bold mb-1" id="avgClicks">{{ $stats['total_urls'] > 0 ? round($stats['total_clicks'] / $stats['total_urls'], 1) : 0 }}</h5>
-                <p class="text-muted mb-0" style="font-size: 0.8rem;">Avg. Clicks</p>
-                <small class="text-info" style="font-size: 0.7rem;"><i class="fas fa-calculator me-1"></i>Per URL</small>
+                <div class="position-absolute top-0 end-0 p-2">
+                    <div class="bg-info bg-opacity-10 rounded-circle" style="width: 60px; height: 60px; transform: translate(20px, -20px);"></div>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Top URLs Slider -->
-    <div class="top-urls-slider">
-        <div class="d-flex justify-content-between align-items-center mb-2">
+    <div class="main-card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
             <h6 class="fw-bold mb-0" style="font-size: 0.9rem;">
                 <i class="fas fa-star me-2 text-warning"></i>
                 Top 10 Performing URLs
@@ -434,81 +470,157 @@
             </button>
         </div>
         
-        <div class="swiper topUrlsSwiper">
-            <div class="swiper-wrapper" id="topUrlsSlider">
-                @if($stats['top_urls']->count() > 0)
-                    @foreach($stats['top_urls']->take(10) as $url)
-                    <div class="swiper-slide">
-                        <div class="d-flex align-items-center h-100">
-                            <div class="me-2">
-                                <div class="bg-white bg-opacity-25 rounded-circle d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
-                                    <strong style="font-size: 0.7rem;">#{{ $loop->iteration }}</strong>
+        <div class="card-body p-3">
+            <div class="swiper topUrlsSwiper">
+                <div class="swiper-wrapper" id="topUrlsSlider">
+                    @if($stats['top_urls']->count() > 0)
+                        @foreach($stats['top_urls']->take(10) as $url)
+                        <div class="swiper-slide">
+                            <div class="bg-white border rounded-3 p-3 h-100 shadow-sm position-relative overflow-hidden" style="border-left: 4px solid #0ea5e9 !important;">
+                                <!-- Decorative elements -->
+                                <div class="position-absolute top-0 end-0" style="width: 40px; height: 40px; background: linear-gradient(135deg, #0ea5e9, #06b6d4); opacity: 0.1; border-radius: 50%; transform: translate(15px, -15px);"></div>
+                                <div class="position-absolute bottom-0 start-0" style="width: 25px; height: 25px; background: linear-gradient(135deg, #10b981, #059669); opacity: 0.1; border-radius: 50%; transform: translate(-10px, 10px);"></div>
+                                
+                                <div class="d-flex align-items-center h-100 position-relative">
+                                    <div class="me-3">
+                                        <div class="bg-primary bg-gradient text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm" style="width: 35px; height: 35px; font-size: 0.8rem;">
+                                            #{{ $loop->iteration }}
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="fw-bold mb-1 text-dark" style="font-size: 0.85rem;">{{ $url->title ?: 'Untitled' }}</h6>
+                                        <div class="d-flex align-items-center mb-1">
+                                            <span class="badge bg-success bg-gradient me-2" style="font-size: 0.7rem;">
+                                                <i class="fas fa-mouse-pointer me-1"></i>{{ $url->clicks }} clicks
+                                            </span>
+                                        </div>
+                                        <small class="text-muted d-flex align-items-center" style="font-size: 0.65rem;">
+                                            <i class="fas fa-user me-1"></i>
+                                            @if($url->user)
+                                                {{ $url->user->name }}
+                                            @else
+                                                Guest User
+                                            @endif
+                                        </small>
+                                    </div>
+                                    <div class="text-end">
+                                        <i class="fas fa-chart-line text-primary" style="font-size: 1.2rem; opacity: 0.3;"></i>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="flex-grow-1">
-                                <h6 class="fw-bold mb-0" style="font-size: 0.8rem;">{{ $url->title ?: 'Untitled' }}</h6>
-                                <p class="mb-0 opacity-75" style="font-size: 0.7rem;">{{ $url->clicks }} clicks</p>
-                                <small class="opacity-50" style="font-size: 0.65rem;">
-                                    @if($url->user)
-                                        by {{ $url->user->name }}
-                                    @else
-                                        Guest User
-                                    @endif
-                                </small>
+                        </div>
+                        @endforeach
+                    @else
+                        <div class="swiper-slide">
+                            <div class="bg-white border rounded-3 p-4 h-100 shadow-sm text-center">
+                                <div class="d-flex flex-column align-items-center justify-content-center h-100">
+                                    <div class="bg-light rounded-circle p-3 mb-3" style="width: 60px; height: 60px;">
+                                        <i class="fas fa-chart-line text-muted" style="font-size: 1.5rem;"></i>
+                                    </div>
+                                    <h6 class="text-muted mb-1">No URLs Created Yet</h6>
+                                    <small class="text-muted">Start creating URLs to see top performers here</small>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    @endforeach
-                @else
-                    <div class="swiper-slide">
-                        <div class="text-center">
-                            <i class="fas fa-chart-line mb-3" style="font-size: 2rem; opacity: 0.5;"></i>
-                            <p class="mb-0 opacity-75">No URLs created yet</p>
-                        </div>
-                    </div>
-                @endif
+                    @endif
+                </div>
+                <div class="swiper-pagination mt-3"></div>
             </div>
-            <div class="swiper-pagination"></div>
         </div>
     </div>
     
     <!-- URL Management Table - Full Width -->
     <div class="main-card">
-        <div class="card-header bg-white d-flex justify-content-between align-items-center border-0">
-            <h6 class="mb-0 fw-bold" style="font-size: 0.9rem;">
-                <i class="fas fa-list me-2 text-primary"></i>
-                All URLs Management
-            </h6>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <div class="bg-primary bg-gradient rounded-circle p-2 me-3 shadow-sm" style="width: 40px; height: 40px;">
+                    <i class="fas fa-table text-white" style="font-size: 1rem;"></i>
+                </div>
+                <div>
+                    <h4 class="mb-0 fw-bold text-dark">URLs Management</h4>
+                    <small class="text-muted">Manage and monitor all shortened URLs</small>
+                </div>
+            </div>
             <div class="header-buttons">
-                <button class="btn btn-success btn-sm" onclick="exportUrls()" style="font-size: 0.75rem; padding: 4px 8px;">
-                    <i class="fas fa-download me-1"></i>
-                    Export
+                <button class="btn btn-outline-success btn-sm shadow-sm" onclick="exportUrls()">
+                    <i class="fas fa-download me-2"></i>
+                    Export Data
                 </button>
-                <button class="btn btn-primary btn-sm" onclick="refreshUrls()" style="font-size: 0.75rem; padding: 4px 8px;">
-                    <i class="fas fa-sync-alt me-1"></i>
+                <button class="btn btn-outline-primary btn-sm shadow-sm" onclick="refreshUrls()">
+                    <i class="fas fa-sync-alt me-2"></i>
                     Refresh
                 </button>
             </div>
         </div>
-        <div class="card-body">
+        <div class="card-body p-0">
             <div class="table-container">
-                <table class="table table-hover" id="urlsTable" style="width: 100%;">
-                    <thead>
-                        <tr>
-                            <th>Title</th>
-                            <th>Short URL</th>
-                            <th>Original URL</th>
-                            <th>User</th>
-                            <th>Clicks</th>
-                            <th>Created</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Data will be loaded via AJAX -->
-                    </tbody>
-                </table>
+                <div class="px-3 py-3 bg-light border-bottom">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h6 class="mb-0 text-muted">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Click on any URL to view detailed analytics
+                            </h6>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <span class="badge bg-primary bg-gradient px-3 py-2">
+                                <i class="fas fa-chart-line me-1"></i>
+                                Live Data
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-3">
+                    <table class="table table-hover mb-0" id="urlsTable" style="width: 100%;">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="border-0 fw-bold text-dark">
+                                    <i class="fas fa-tag me-2 text-primary"></i>Title
+                                </th>
+                                <th class="border-0 fw-bold text-dark">
+                                    <i class="fas fa-link me-2 text-success"></i>Short URL
+                                </th>
+                                <th class="border-0 fw-bold text-dark">
+                                    <i class="fas fa-globe me-2 text-info"></i>Original URL
+                                </th>
+                                <th class="border-0 fw-bold text-dark">
+                                    <i class="fas fa-user me-2 text-warning"></i>User
+                                </th>
+                                <th class="border-0 fw-bold text-dark text-center">
+                                    <i class="fas fa-mouse-pointer me-2 text-primary"></i>Clicks
+                                </th>
+                                <th class="border-0 fw-bold text-dark">
+                                    <i class="fas fa-calendar me-2 text-secondary"></i>Created
+                                </th>
+                                <th class="border-0 fw-bold text-dark text-center">
+                                    <i class="fas fa-circle me-2 text-success"></i>Status
+                                </th>
+                                <th class="border-0 fw-bold text-dark text-center">
+                                    <i class="fas fa-cogs me-2 text-dark"></i>Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be loaded via AJAX -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer bg-light border-0">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <small class="text-muted d-flex align-items-center">
+                        <i class="fas fa-clock me-2"></i>
+                        Last updated: <span id="lastUpdated" class="ms-1 fw-medium">Just now</span>
+                    </small>
+                </div>
+                <div class="col-md-6 text-end">
+                    <small class="text-muted">
+                        <i class="fas fa-shield-alt me-2 text-success"></i>
+                        Secure & Monitored
+                    </small>
+                </div>
             </div>
         </div>
     </div>
