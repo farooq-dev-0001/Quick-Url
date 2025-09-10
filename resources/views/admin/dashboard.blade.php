@@ -134,21 +134,71 @@
     }
     
     .dataTables_wrapper .dataTables_length {
-        margin-bottom: 20px;
+        margin-bottom: 10px;
     }
     
     .dataTables_wrapper .dataTables_filter {
-        margin-bottom: 20px;
+        margin-bottom: 10px;
+    }
+    
+    /* DataTable Controls Size Reduction */
+    .dataTables_wrapper .dataTables_length select {
+        font-size: 0.8rem;
+        padding: 2px 6px;
+        height: auto;
+        min-height: 28px;
+    }
+    
+    .dataTables_wrapper .dataTables_length label {
+        font-size: 0.8rem;
+        margin-bottom: 0;
+    }
+    
+    .dataTables_wrapper .dataTables_filter input {
+        font-size: 0.8rem;
+        padding: 4px 8px;
+        height: auto;
+        min-height: 28px;
+        width: 150px;
+    }
+    
+    .dataTables_wrapper .dataTables_filter label {
+        font-size: 0.8rem;
+        margin-bottom: 0;
     }
     
     .dataTables_wrapper .dataTables_info {
-        padding-top: 15px;
+        padding-top: 8px;
         margin: 0;
+        font-size: 0.8rem;
     }
     
     .dataTables_wrapper .dataTables_paginate {
-        padding-top: 15px;
+        padding-top: 8px;
         margin: 0;
+    }
+    
+    /* Pagination Button Size Reduction */
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        padding: 4px 8px !important;
+        margin: 0 2px !important;
+        font-size: 0.8rem !important;
+        min-width: auto !important;
+    }
+    
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        padding: 4px 8px !important;
+        font-size: 0.8rem !important;
+    }
+    
+    .page-link {
+        padding: 4px 8px !important;
+        font-size: 0.8rem !important;
+    }
+    
+    .page-item .page-link {
+        min-width: auto !important;
     }
     
     .page-item.active .page-link {
@@ -359,7 +409,7 @@
 @section('content')
 <div class="container-fluid px-4">
     <!-- Dashboard Header -->
-    <div class="dashboard-header">
+    <div class="dashboard-header mb-5">
         <div class="d-flex justify-content-between align-items-center">
             <div>
                 <h4 class="mb-1">
@@ -810,6 +860,7 @@ function initializeDataTable() {
         ],
         order: [[5, 'desc']],
         pageLength: 25,
+        lengthChange: false,
         responsive: true,
         scrollX: true,
         autoWidth: false,
@@ -831,7 +882,6 @@ function initializeDataTable() {
         ],
         language: {
             search: "Search URLs:",
-            lengthMenu: "Show _MENU_ URLs per page",
             info: "Showing _START_ to _END_ of _TOTAL_ URLs",
             infoEmpty: "No URLs found",
             infoFiltered: "(filtered from _MAX_ total URLs)",
@@ -842,7 +892,7 @@ function initializeDataTable() {
                 previous: "Previous"
             }
         },
-        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
+        dom: '<"row"<"col-sm-12 col-md-6"><"col-sm-12 col-md-6"f>>' +
              '<"row"<"col-sm-12"tr>>' +
              '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>'
     });
