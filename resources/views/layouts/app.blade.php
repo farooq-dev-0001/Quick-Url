@@ -20,12 +20,12 @@
     
     <style>
         :root {
-            --primary-color: #667eea;
-            --secondary-color: #764ba2;
+            --primary-color: #0ea5e9;
+            --secondary-color: #06b6d4;
             --success-color: #10b981;
             --danger-color: #ef4444;
             --warning-color: #f59e0b;
-            --info-color: #3b82f6;
+            --info-color: #0ea5e9;
         }
         
         body {
@@ -53,7 +53,7 @@
         
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 8px 20px rgba(14, 165, 233, 0.4);
         }
         
         .form-control {
@@ -65,7 +65,7 @@
         
         .form-control:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            box-shadow: 0 0 0 0.2rem rgba(14, 165, 233, 0.25);
         }
         
         .navbar {

@@ -11,50 +11,50 @@
     }
     
     .dashboard-header {
-        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
         color: white;
-        border-radius: 20px;
-        padding: 30px;
-        margin-bottom: 30px;
-        box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3);
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 8px rgba(14, 165, 233, 0.15);
     }
     
     .stats-card {
         background: white;
-        border-radius: 16px;
-        padding: 25px;
+        border-radius: 8px;
+        padding: 15px;
         border: none;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
         transition: all 0.3s ease;
         height: 100%;
     }
     
     .stats-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
     
     .stats-icon {
-        width: 60px;
-        height: 60px;
-        border-radius: 16px;
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 24px;
+        font-size: 16px;
         color: white;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
     }
     
     .stats-icon.total-urls { background: linear-gradient(135deg, #06b6d4, #0891b2); }
     .stats-icon.total-clicks { background: linear-gradient(135deg, #10b981, #059669); }
     .stats-icon.urls-today { background: linear-gradient(135deg, #f59e0b, #d97706); }
-    .stats-icon.avg-clicks { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+    .stats-icon.avg-clicks { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
     
     .main-card {
         background: white;
-        border-radius: 20px;
-        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
         border: none;
         overflow: hidden;
     }
@@ -62,7 +62,7 @@
     .main-card .card-header {
         border-bottom: 1px solid #e5e7eb;
         background: #f9fafb !important;
-        padding: 20px 30px;
+        padding: 12px 15px;
     }
     
     .main-card .card-header h4 {
@@ -76,31 +76,57 @@
     
     .top-urls-slider {
         background: white;
-        border-radius: 20px;
-        padding: 30px;
-        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
-        margin-bottom: 30px;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+        margin-bottom: 15px;
     }
     
     .swiper {
         width: 100%;
-        height: 200px;
+        height: 120px;
     }
     
     .swiper-slide {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        border-radius: 16px;
-        padding: 20px;
+        background: linear-gradient(135deg, #8b5cf6, #a855f7);
+        border-radius: 8px;
+        padding: 12px;
         color: white;
         display: flex;
         flex-direction: column;
         justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .swiper-slide::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.12);
+        border-radius: 50%;
+        transform: translate(12px, -12px);
+    }
+    
+    .swiper-slide::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 25px;
+        height: 25px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 50%;
+        transform: translate(-8px, 8px);
     }
     
     .table-container {
         width: 100%;
         overflow-x: auto;
-        padding: 25px;
+        padding: 15px;
     }
     
     .dataTables_wrapper {
@@ -126,8 +152,8 @@
     }
     
     .page-item.active .page-link {
-        background-color: #4f46e5;
-        border-color: #4f46e5;
+        background-color: #0ea5e9;
+        border-color: #0ea5e9;
     }
     
     /* Table Responsive Improvements */
@@ -137,17 +163,19 @@
     
     .table th {
         border-top: none;
-        padding: 15px 10px;
+        padding: 10px 6px;
         font-weight: 600;
         background-color: #f8fafc;
         border-bottom: 2px solid #e5e7eb;
         white-space: nowrap;
+        font-size: 0.85rem;
     }
     
     .table td {
-        padding: 15px 10px;
+        padding: 10px 6px;
         vertical-align: middle;
         border-bottom: 1px solid #f1f5f9;
+        font-size: 0.85rem;
     }
     
     .table tbody tr:hover {
@@ -170,12 +198,13 @@
     }
     
     .action-buttons .btn {
-        min-width: 35px;
-        height: 35px;
-        padding: 8px;
+        min-width: 28px;
+        height: 28px;
+        padding: 4px;
         display: flex;
         align-items: center;
         justify-content: center;
+        font-size: 0.8rem;
     }
     
     /* Header Button Improvements */
@@ -194,15 +223,15 @@
     /* Mobile Responsive */
     @media (max-width: 768px) {
         .main-card .card-header {
-            padding: 15px 20px;
+            padding: 12px 15px;
             flex-direction: column;
-            gap: 15px;
+            gap: 10px;
         }
         
         .main-card .card-header .d-flex {
             flex-direction: column;
             align-items: flex-start !important;
-            gap: 15px;
+            gap: 10px;
         }
         
         .header-buttons {
@@ -216,8 +245,8 @@
         
         .table th,
         .table td {
-            padding: 10px 8px;
-            font-size: 0.875rem;
+            padding: 8px 6px;
+            font-size: 0.8rem;
         }
         
         .action-buttons {
@@ -226,23 +255,23 @@
         }
         
         .action-buttons .btn {
-            min-width: 30px;
-            height: 30px;
-            padding: 5px;
+            min-width: 28px;
+            height: 28px;
+            padding: 4px;
         }
         
         .stats-card {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         .dashboard-header {
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 12px;
+            margin-bottom: 12px;
         }
         
         .dashboard-header .d-flex {
             flex-direction: column;
-            gap: 15px;
+            gap: 10px;
             align-items: flex-start !important;
         }
     }
@@ -269,15 +298,60 @@
     }
     
     .copy-btn:hover {
-        background-color: #4f46e5 !important;
+        background-color: #0ea5e9 !important;
         color: white !important;
-        border-color: #4f46e5 !important;
+        border-color: #0ea5e9 !important;
     }
     
     /* Badge Styling */
     .badge {
         font-size: 0.75rem;
         padding: 6px 10px;
+    }
+    
+    /* Swiper Customization */
+    .swiper-pagination-bullet {
+        background: rgba(255, 255, 255, 0.5) !important;
+        opacity: 0.7 !important;
+    }
+    
+    .swiper-pagination-bullet-active {
+        background: white !important;
+        opacity: 1 !important;
+    }
+    
+    /* Compact margins */
+    .container-fluid {
+        padding: 0 15px;
+    }
+    
+    @media (max-width: 768px) {
+        .container-fluid {
+            padding: 0 10px;
+        }
+    }
+    
+    /* Additional compact styles */
+    .btn-sm {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+    }
+    
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter {
+        margin-bottom: 10px;
+    }
+    
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_paginate {
+        padding-top: 8px;
+        margin: 0;
+        font-size: 0.8rem;
     }
 </style>
 @endpush
@@ -302,60 +376,60 @@
     </div>
     
     <!-- Stats Cards -->
-    <div class="row mb-5">
-        <div class="col-lg-3 col-md-6 mb-4">
+    <div class="row mb-3">
+        <div class="col-lg-3 col-md-6 mb-2">
             <div class="stats-card">
                 <div class="stats-icon total-urls">
                     <i class="fas fa-link"></i>
                 </div>
-                <h3 class="fw-bold mb-1" id="totalUrls">{{ $stats['total_urls'] }}</h3>
-                <p class="text-muted mb-0">Total URLs</p>
-                <small class="text-success"><i class="fas fa-arrow-up me-1"></i>All Users</small>
+                <h5 class="fw-bold mb-1" id="totalUrls">{{ $stats['total_urls'] }}</h5>
+                <p class="text-muted mb-0" style="font-size: 0.8rem;">Total URLs</p>
+                <small class="text-success" style="font-size: 0.7rem;"><i class="fas fa-arrow-up me-1"></i>All Users</small>
             </div>
         </div>
         
-        <div class="col-lg-3 col-md-6 mb-4">
+        <div class="col-lg-3 col-md-6 mb-2">
             <div class="stats-card">
                 <div class="stats-icon total-clicks">
                     <i class="fas fa-mouse-pointer"></i>
                 </div>
-                <h3 class="fw-bold mb-1" id="totalClicks">{{ $stats['total_clicks'] }}</h3>
-                <p class="text-muted mb-0">Total Clicks</p>
-                <small class="text-success"><i class="fas fa-arrow-up me-1"></i>All URLs</small>
+                <h5 class="fw-bold mb-1" id="totalClicks">{{ $stats['total_clicks'] }}</h5>
+                <p class="text-muted mb-0" style="font-size: 0.8rem;">Total Clicks</p>
+                <small class="text-success" style="font-size: 0.7rem;"><i class="fas fa-arrow-up me-1"></i>All URLs</small>
             </div>
         </div>
         
-        <div class="col-lg-3 col-md-6 mb-4">
+        <div class="col-lg-3 col-md-6 mb-2">
             <div class="stats-card">
                 <div class="stats-icon urls-today">
                     <i class="fas fa-calendar-day"></i>
                 </div>
-                <h3 class="fw-bold mb-1" id="urlsToday">{{ $stats['urls_today'] }}</h3>
-                <p class="text-muted mb-0">URLs Today</p>
-                <small class="text-info"><i class="fas fa-clock me-1"></i>Last 24h</small>
+                <h5 class="fw-bold mb-1" id="urlsToday">{{ $stats['urls_today'] }}</h5>
+                <p class="text-muted mb-0" style="font-size: 0.8rem;">URLs Today</p>
+                <small class="text-info" style="font-size: 0.7rem;"><i class="fas fa-clock me-1"></i>Last 24h</small>
             </div>
         </div>
         
-        <div class="col-lg-3 col-md-6 mb-4">
+        <div class="col-lg-3 col-md-6 mb-2">
             <div class="stats-card">
                 <div class="stats-icon avg-clicks">
                     <i class="fas fa-chart-line"></i>
                 </div>
-                <h3 class="fw-bold mb-1" id="avgClicks">{{ $stats['total_urls'] > 0 ? round($stats['total_clicks'] / $stats['total_urls'], 1) : 0 }}</h3>
-                <p class="text-muted mb-0">Avg. Clicks</p>
-                <small class="text-info"><i class="fas fa-calculator me-1"></i>Per URL</small>
+                <h5 class="fw-bold mb-1" id="avgClicks">{{ $stats['total_urls'] > 0 ? round($stats['total_clicks'] / $stats['total_urls'], 1) : 0 }}</h5>
+                <p class="text-muted mb-0" style="font-size: 0.8rem;">Avg. Clicks</p>
+                <small class="text-info" style="font-size: 0.7rem;"><i class="fas fa-calculator me-1"></i>Per URL</small>
             </div>
         </div>
     </div>
 
     <!-- Top URLs Slider -->
     <div class="top-urls-slider">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="fw-bold mb-0">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="fw-bold mb-0" style="font-size: 0.9rem;">
                 <i class="fas fa-star me-2 text-warning"></i>
                 Top 10 Performing URLs
-            </h4>
-            <button class="btn btn-outline-primary btn-sm" onclick="refreshTopUrls()">
+            </h6>
+            <button class="btn btn-outline-primary btn-sm" onclick="refreshTopUrls()" style="font-size: 0.75rem; padding: 4px 8px;">
                 <i class="fas fa-sync-alt me-1"></i> Refresh
             </button>
         </div>
@@ -366,15 +440,15 @@
                     @foreach($stats['top_urls']->take(10) as $url)
                     <div class="swiper-slide">
                         <div class="d-flex align-items-center h-100">
-                            <div class="me-3">
-                                <div class="bg-white bg-opacity-20 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                                    <strong>#{{ $loop->iteration }}</strong>
+                            <div class="me-2">
+                                <div class="bg-white bg-opacity-25 rounded-circle d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+                                    <strong style="font-size: 0.7rem;">#{{ $loop->iteration }}</strong>
                                 </div>
                             </div>
                             <div class="flex-grow-1">
-                                <h6 class="fw-bold mb-1">{{ $url->title ?: 'Untitled' }}</h6>
-                                <p class="mb-1 opacity-75">{{ $url->clicks }} clicks</p>
-                                <small class="opacity-50">
+                                <h6 class="fw-bold mb-0" style="font-size: 0.8rem;">{{ $url->title ?: 'Untitled' }}</h6>
+                                <p class="mb-0 opacity-75" style="font-size: 0.7rem;">{{ $url->clicks }} clicks</p>
+                                <small class="opacity-50" style="font-size: 0.65rem;">
                                     @if($url->user)
                                         by {{ $url->user->name }}
                                     @else
@@ -401,17 +475,17 @@
     <!-- URL Management Table - Full Width -->
     <div class="main-card">
         <div class="card-header bg-white d-flex justify-content-between align-items-center border-0">
-            <h4 class="mb-0 fw-bold">
+            <h6 class="mb-0 fw-bold" style="font-size: 0.9rem;">
                 <i class="fas fa-list me-2 text-primary"></i>
                 All URLs Management
-            </h4>
+            </h6>
             <div class="header-buttons">
-                <button class="btn btn-success btn-sm" onclick="exportUrls()">
-                    <i class="fas fa-download me-2"></i>
+                <button class="btn btn-success btn-sm" onclick="exportUrls()" style="font-size: 0.75rem; padding: 4px 8px;">
+                    <i class="fas fa-download me-1"></i>
                     Export
                 </button>
-                <button class="btn btn-primary btn-sm" onclick="refreshUrls()">
-                    <i class="fas fa-sync-alt me-2"></i>
+                <button class="btn btn-primary btn-sm" onclick="refreshUrls()" style="font-size: 0.75rem; padding: 4px 8px;">
+                    <i class="fas fa-sync-alt me-1"></i>
                     Refresh
                 </button>
             </div>
@@ -758,15 +832,15 @@ function updateTopUrlsSlider(topUrls) {
             const slide = `
                 <div class="swiper-slide">
                     <div class="d-flex align-items-center h-100">
-                        <div class="me-3">
-                            <div class="bg-white bg-opacity-20 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                                <strong>#${index + 1}</strong>
+                        <div class="me-2">
+                            <div class="bg-white bg-opacity-25 rounded-circle d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+                                <strong style="font-size: 0.7rem;">#${index + 1}</strong>
                             </div>
                         </div>
                         <div class="flex-grow-1">
-                            <h6 class="fw-bold mb-1">${url.title || 'Untitled'}</h6>
-                            <p class="mb-1 opacity-75">${url.clicks} clicks</p>
-                            <small class="opacity-50">
+                            <h6 class="fw-bold mb-0" style="font-size: 0.8rem;">${url.title || 'Untitled'}</h6>
+                            <p class="mb-0 opacity-75" style="font-size: 0.7rem;">${url.clicks} clicks</p>
+                            <small class="opacity-50" style="font-size: 0.65rem;">
                                 ${url.user ? `by ${url.user.name}` : 'Guest User'}
                             </small>
                         </div>
