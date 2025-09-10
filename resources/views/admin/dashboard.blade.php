@@ -554,22 +554,6 @@
         </div>
         <div class="card-body p-0">
             <div class="table-container">
-                <div class="px-3 py-3 bg-light border-bottom">
-                    <div class="row align-items-center">
-                        <div class="col-md-6">
-                            <h6 class="mb-0 text-muted">
-                                <i class="fas fa-info-circle me-2"></i>
-                                Click on any URL to view detailed analytics
-                            </h6>
-                        </div>
-                        <div class="col-md-6 text-end">
-                            <span class="badge bg-primary bg-gradient px-3 py-2">
-                                <i class="fas fa-chart-line me-1"></i>
-                                Live Data
-                            </span>
-                        </div>
-                    </div>
-                </div>
                 <div class="p-3">
                     <table class="table table-hover mb-0" id="urlsTable" style="width: 100%;">
                         <thead class="table-light">
