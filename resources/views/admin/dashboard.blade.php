@@ -2,244 +2,439 @@
 
 @section('title', 'Dashboard - Quick URL')
 
+@push('styles')
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css">
+<style>
+    body {
+        background: #f8fafc !important;
+    }
+    
+    .dashboard-header {
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        color: white;
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3);
+    }
+    
+    .stats-card {
+        background: white;
+        border-radius: 16px;
+        padding: 25px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    }
+    
+    .stats-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: white;
+        margin-bottom: 20px;
+    }
+    
+    .stats-icon.total-urls { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+    .stats-icon.total-clicks { background: linear-gradient(135deg, #10b981, #059669); }
+    .stats-icon.urls-today { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .stats-icon.avg-clicks { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+    
+    .main-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+        border: none;
+        overflow: hidden;
+    }
+    
+    .main-card .card-header {
+        border-bottom: 1px solid #e5e7eb;
+        background: #f9fafb !important;
+        padding: 20px 30px;
+    }
+    
+    .main-card .card-header h4 {
+        margin: 0;
+        font-weight: 600;
+    }
+    
+    .main-card .card-body {
+        padding: 0;
+    }
+    
+    .top-urls-slider {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+    
+    .swiper {
+        width: 100%;
+        height: 200px;
+    }
+    
+    .swiper-slide {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 16px;
+        padding: 20px;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+        padding: 25px;
+    }
+    
+    .dataTables_wrapper {
+        padding: 0;
+    }
+    
+    .dataTables_wrapper .dataTables_length {
+        margin-bottom: 20px;
+    }
+    
+    .dataTables_wrapper .dataTables_filter {
+        margin-bottom: 20px;
+    }
+    
+    .dataTables_wrapper .dataTables_info {
+        padding-top: 15px;
+        margin: 0;
+    }
+    
+    .dataTables_wrapper .dataTables_paginate {
+        padding-top: 15px;
+        margin: 0;
+    }
+    
+    .page-item.active .page-link {
+        background-color: #4f46e5;
+        border-color: #4f46e5;
+    }
+    
+    /* Table Responsive Improvements */
+    .table {
+        margin-bottom: 0;
+    }
+    
+    .table th {
+        border-top: none;
+        padding: 15px 10px;
+        font-weight: 600;
+        background-color: #f8fafc;
+        border-bottom: 2px solid #e5e7eb;
+        white-space: nowrap;
+    }
+    
+    .table td {
+        padding: 15px 10px;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    
+    .table tbody tr:hover {
+        background-color: #f8fafc;
+    }
+    
+    /* Button Group Responsive */
+    .btn-group-sm > .btn {
+        padding: 6px 10px;
+        font-size: 0.875rem;
+        margin: 1px;
+    }
+    
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .action-buttons .btn {
+        min-width: 35px;
+        height: 35px;
+        padding: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Header Button Improvements */
+    .header-buttons {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    
+    .header-buttons .btn {
+        margin: 2px;
+        white-space: nowrap;
+    }
+    
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+        .main-card .card-header {
+            padding: 15px 20px;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .main-card .card-header .d-flex {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 15px;
+        }
+        
+        .header-buttons {
+            width: 100%;
+            justify-content: flex-start;
+        }
+        
+        .table-container {
+            padding: 15px;
+        }
+        
+        .table th,
+        .table td {
+            padding: 10px 8px;
+            font-size: 0.875rem;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+            gap: 3px;
+        }
+        
+        .action-buttons .btn {
+            min-width: 30px;
+            height: 30px;
+            padding: 5px;
+        }
+        
+        .stats-card {
+            margin-bottom: 20px;
+        }
+        
+        .dashboard-header {
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .dashboard-header .d-flex {
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-start !important;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .container-fluid {
+            padding: 0 15px;
+        }
+        
+        .table th:nth-child(3),
+        .table td:nth-child(3) {
+            display: none; /* Hide Original URL column on small screens */
+        }
+        
+        .table th:nth-child(4),
+        .table td:nth-child(4) {
+            display: none; /* Hide User column on small screens */
+        }
+    }
+    
+    /* Copy Button Styling */
+    .copy-btn {
+        transition: all 0.2s ease;
+    }
+    
+    .copy-btn:hover {
+        background-color: #4f46e5 !important;
+        color: white !important;
+        border-color: #4f46e5 !important;
+    }
+    
+    /* Badge Styling */
+    .badge {
+        font-size: 0.75rem;
+        padding: 6px 10px;
+    }
+</style>
+@endpush
+
 @section('content')
-<div class="container-fluid">
-    <div class="row">
-        <!-- Page Header -->
-        <div class="col-12 mb-4">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h1 class="text-white mb-1">
-                        <i class="fas fa-tachometer-alt me-3"></i>
-                        Dashboard
-                    </h1>
-                    <p class="text-white-75 mb-0">Welcome back, {{ Auth::user()->name }}! Here's the global overview.</p>
-                </div>
-                <a href="{{ route('home') }}" class="btn btn-light">
-                    <i class="fas fa-plus me-2"></i>
-                    Create New URL
-                </a>
+<div class="container-fluid px-4">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="mb-2">
+                    <i class="fas fa-tachometer-alt me-3"></i>
+                    Dashboard
+                </h1>
+                <p class="mb-0 opacity-75">Welcome back, {{ Auth::user()->name }}! Here's your URL management overview.</p>
             </div>
+            <a href="{{ route('home') }}" class="btn btn-light btn-lg">
+                <i class="fas fa-plus me-2"></i>
+                Create New URL
+            </a>
         </div>
     </div>
     
     <!-- Stats Cards -->
-    <div class="row mb-4">
-        <div class="col-lg-3 col-md-6 mb-3">
+    <div class="row mb-5">
+        <div class="col-lg-3 col-md-6 mb-4">
             <div class="stats-card">
-                <div class="d-flex align-items-center">
-                    <div class="stats-icon me-3">
-                        <i class="fas fa-link"></i>
-                    </div>
-                    <div>
-                        <h4 class="mb-0" id="totalUrls">{{ $stats['total_urls'] }}</h4>
-                        <small>Total URLs (All Users)</small>
-                    </div>
+                <div class="stats-icon total-urls">
+                    <i class="fas fa-link"></i>
                 </div>
+                <h3 class="fw-bold mb-1" id="totalUrls">{{ $stats['total_urls'] }}</h3>
+                <p class="text-muted mb-0">Total URLs</p>
+                <small class="text-success"><i class="fas fa-arrow-up me-1"></i>All Users</small>
             </div>
         </div>
         
-        <div class="col-lg-3 col-md-6 mb-3">
+        <div class="col-lg-3 col-md-6 mb-4">
             <div class="stats-card">
-                <div class="d-flex align-items-center">
-                    <div class="stats-icon me-3">
-                        <i class="fas fa-mouse-pointer"></i>
-                    </div>
-                    <div>
-                        <h4 class="mb-0" id="totalClicks">{{ $stats['total_clicks'] }}</h4>
-                        <small>Total Clicks (All URLs)</small>
-                    </div>
+                <div class="stats-icon total-clicks">
+                    <i class="fas fa-mouse-pointer"></i>
                 </div>
+                <h3 class="fw-bold mb-1" id="totalClicks">{{ $stats['total_clicks'] }}</h3>
+                <p class="text-muted mb-0">Total Clicks</p>
+                <small class="text-success"><i class="fas fa-arrow-up me-1"></i>All URLs</small>
             </div>
         </div>
         
-        <div class="col-lg-3 col-md-6 mb-3">
+        <div class="col-lg-3 col-md-6 mb-4">
             <div class="stats-card">
-                <div class="d-flex align-items-center">
-                    <div class="stats-icon me-3">
-                        <i class="fas fa-calendar-day"></i>
-                    </div>
-                    <div>
-                        <h4 class="mb-0" id="urlsToday">{{ $stats['urls_today'] }}</h4>
-                        <small>URLs Created Today</small>
-                    </div>
+                <div class="stats-icon urls-today">
+                    <i class="fas fa-calendar-day"></i>
                 </div>
+                <h3 class="fw-bold mb-1" id="urlsToday">{{ $stats['urls_today'] }}</h3>
+                <p class="text-muted mb-0">URLs Today</p>
+                <small class="text-info"><i class="fas fa-clock me-1"></i>Last 24h</small>
             </div>
         </div>
         
-        <div class="col-lg-3 col-md-6 mb-3">
+        <div class="col-lg-3 col-md-6 mb-4">
             <div class="stats-card">
-                <div class="d-flex align-items-center">
-                    <div class="stats-icon me-3">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div>
-                        <h4 class="mb-0" id="avgClicks">{{ $stats['total_urls'] > 0 ? round($stats['total_clicks'] / $stats['total_urls'], 1) : 0 }}</h4>
-                        <small>Global Avg. Clicks</small>
-                    </div>
+                <div class="stats-icon avg-clicks">
+                    <i class="fas fa-chart-line"></i>
                 </div>
+                <h3 class="fw-bold mb-1" id="avgClicks">{{ $stats['total_urls'] > 0 ? round($stats['total_clicks'] / $stats['total_urls'], 1) : 0 }}</h3>
+                <p class="text-muted mb-0">Avg. Clicks</p>
+                <small class="text-info"><i class="fas fa-calculator me-1"></i>Per URL</small>
             </div>
         </div>
     </div>
-    
-    <!-- URL Management -->
-    <div class="row">
-        <div class="col-lg-8 mb-4">
-            <div class="card">
-                <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">
-                        <i class="fas fa-list me-2 text-primary"></i>
-                        All URLs
-                    </h5>
-                    <div class="d-flex gap-2">
-                        <div class="input-group" style="width: 300px;">
-                            <input type="text" class="form-control form-control-sm" id="searchInput" 
-                                   placeholder="Search URLs...">
-                            <button class="btn btn-outline-secondary btn-sm" onclick="searchUrls()">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </div>
-                        <button class="btn btn-primary btn-sm" onclick="refreshUrls()">
-                            <i class="fas fa-sync-alt"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Title</th>
-                                    <th>Short URL</th>
-                                    <th>User</th>
-                                    <th>Clicks</th>
-                                    <th>Created</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="urlsTableBody">
-                                @foreach($urls as $url)
-                                <tr data-url-id="{{ $url->id }}">
-                                    <td>
-                                        <div>
-                                            <strong>{{ $url->title ?: 'Untitled' }}</strong>
-                                            <br>
-                                            <small class="text-muted text-break">{{ Str::limit($url->original_url, 50) }}</small>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <code class="me-2">{{ $url->getShortUrl() }}</code>
-                                            <button class="btn btn-sm btn-outline-primary copy-btn" 
-                                                    onclick="copyToClipboard('{{ $url->getShortUrl() }}', this)">
-                                                <i class="fas fa-copy"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        @if($url->user)
-                                            <div>
-                                                <strong>{{ $url->user->name }}</strong>
-                                                <br>
-                                                <small class="text-muted">{{ $url->user->email }}</small>
-                                            </div>
-                                        @else
-                                            <span class="text-muted">
-                                                <i class="fas fa-user-slash me-1"></i>
-                                                Guest User
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-primary">{{ $url->clicks }}</span>
-                                    </td>
-                                    <td>
-                                        <small>{{ $url->created_at->format('M d, Y H:i') }}</small>
-                                    </td>
-                                    <td>
-                                        <div class="btn-group btn-group-sm">
-                                            <button class="btn btn-outline-info" onclick="viewStats('{{ $url->short_code }}')">
-                                                <i class="fas fa-chart-bar"></i>
-                                            </button>
-                                            <button class="btn btn-outline-warning" onclick="editUrl({{ $url->id }})">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="btn btn-outline-danger" onclick="deleteUrl({{ $url->id }})">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <!-- Pagination -->
-                    <div class="card-footer bg-white" id="pagination">
-                        {{ $urls->links() }}
-                    </div>
-                </div>
-            </div>
+
+    <!-- Top URLs Slider -->
+    <div class="top-urls-slider">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="fw-bold mb-0">
+                <i class="fas fa-star me-2 text-warning"></i>
+                Top 10 Performing URLs
+            </h4>
+            <button class="btn btn-outline-primary btn-sm" onclick="refreshTopUrls()">
+                <i class="fas fa-sync-alt me-1"></i> Refresh
+            </button>
         </div>
         
-        <!-- Top URLs Sidebar -->
-        <div class="col-lg-4">
-            <div class="card mb-4">
-                <div class="card-header bg-white">
-                    <h6 class="mb-0">
-                        <i class="fas fa-star me-2 text-warning"></i>
-                        Top Performing URLs
-                    </h6>
-                </div>
-                <div class="card-body">
-                    @if($stats['top_urls']->count() > 0)
-                        @foreach($stats['top_urls'] as $url)
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="stats-icon me-3" style="width: 40px; height: 40px; font-size: 14px;">
-                                {{ $loop->iteration }}
+        <div class="swiper topUrlsSwiper">
+            <div class="swiper-wrapper" id="topUrlsSlider">
+                @if($stats['top_urls']->count() > 0)
+                    @foreach($stats['top_urls']->take(10) as $url)
+                    <div class="swiper-slide">
+                        <div class="d-flex align-items-center h-100">
+                            <div class="me-3">
+                                <div class="bg-white bg-opacity-20 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                    <strong>#{{ $loop->iteration }}</strong>
+                                </div>
                             </div>
                             <div class="flex-grow-1">
-                                <div class="fw-semibold">{{ $url->title ?: 'Untitled' }}</div>
-                                <small class="text-muted">{{ $url->clicks }} clicks</small>
-                                @if($url->user)
-                                    <br><small class="text-info">by {{ $url->user->name }}</small>
-                                @else
-                                    <br><small class="text-muted">by Guest User</small>
-                                @endif
+                                <h6 class="fw-bold mb-1">{{ $url->title ?: 'Untitled' }}</h6>
+                                <p class="mb-1 opacity-75">{{ $url->clicks }} clicks</p>
+                                <small class="opacity-50">
+                                    @if($url->user)
+                                        by {{ $url->user->name }}
+                                    @else
+                                        Guest User
+                                    @endif
+                                </small>
                             </div>
                         </div>
-                        @endforeach
-                    @else
-                        <p class="text-muted text-center">No URLs yet</p>
-                    @endif
-                </div>
-            </div>
-            
-            <!-- Quick Actions -->
-            <div class="card">
-                <div class="card-header bg-white">
-                    <h6 class="mb-0">
-                        <i class="fas fa-bolt me-2 text-success"></i>
-                        Quick Actions
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <div class="d-grid gap-2">
-                        <a href="{{ route('home') }}" class="btn btn-primary">
-                            <i class="fas fa-plus me-2"></i>
-                            Create New URL
-                        </a>
-                        <button class="btn btn-info" onclick="refreshStats()">
-                            <i class="fas fa-chart-bar me-2"></i>
-                            Refresh Stats
-                        </button>
-                        <button class="btn btn-success" onclick="exportUrls()">
-                            <i class="fas fa-download me-2"></i>
-                            Export URLs
-                        </button>
                     </div>
-                </div>
+                    @endforeach
+                @else
+                    <div class="swiper-slide">
+                        <div class="text-center">
+                            <i class="fas fa-chart-line mb-3" style="font-size: 2rem; opacity: 0.5;"></i>
+                            <p class="mb-0 opacity-75">No URLs created yet</p>
+                        </div>
+                    </div>
+                @endif
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+    </div>
+    
+    <!-- URL Management Table - Full Width -->
+    <div class="main-card">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center border-0">
+            <h4 class="mb-0 fw-bold">
+                <i class="fas fa-list me-2 text-primary"></i>
+                All URLs Management
+            </h4>
+            <div class="header-buttons">
+                <button class="btn btn-success btn-sm" onclick="exportUrls()">
+                    <i class="fas fa-download me-2"></i>
+                    Export
+                </button>
+                <button class="btn btn-primary btn-sm" onclick="refreshUrls()">
+                    <i class="fas fa-sync-alt me-2"></i>
+                    Refresh
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-container">
+                <table class="table table-hover" id="urlsTable" style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Short URL</th>
+                            <th>Original URL</th>
+                            <th>User</th>
+                            <th>Clicks</th>
+                            <th>Created</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be loaded via AJAX -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -279,14 +474,22 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
 <script>
+let urlsTable;
+let topUrlsSwiper;
+
 $(document).ready(function() {
-    // Search functionality
-    $('#searchInput').on('keypress', function(e) {
-        if (e.which === 13) {
-            searchUrls();
-        }
-    });
+    // Initialize DataTable
+    initializeDataTable();
+    
+    // Initialize Swiper
+    initializeSwiper();
+    
+    // Set up real-time refresh
+    setupRealTimeRefresh();
     
     // Edit URL form submission
     $('#editUrlForm').on('submit', function(e) {
@@ -303,7 +506,8 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success) {
                     $('#editUrlModal').modal('hide');
-                    refreshUrls();
+                    urlsTable.ajax.reload();
+                    refreshStats();
                     Swal.fire('Success!', response.message, 'success');
                 }
             },
@@ -321,77 +525,268 @@ $(document).ready(function() {
     });
 });
 
-function searchUrls() {
-    const search = $('#searchInput').val();
-    // Implementation for search functionality
-    refreshUrls(search);
+function initializeDataTable() {
+    urlsTable = $('#urlsTable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '{{ route("admin.urls.datatable") }}',
+            type: 'GET'
+        },
+        columns: [
+            {
+                data: 'title',
+                name: 'title',
+                render: function(data, type, row) {
+                    return `
+                        <div>
+                            <strong>${data || 'Untitled'}</strong>
+                        </div>
+                    `;
+                }
+            },
+            {
+                data: 'short_code',
+                name: 'short_code',
+                render: function(data, type, row) {
+                    const shortUrl = `${window.location.origin}/${data}`;
+                    return `
+                        <div class="d-flex align-items-center">
+                            <code class="me-2">${shortUrl}</code>
+                            <button class="btn btn-sm btn-outline-primary copy-btn" 
+                                    onclick="copyToClipboard('${shortUrl}', this)" title="Copy URL">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    `;
+                }
+            },
+            {
+                data: 'original_url',
+                name: 'original_url',
+                render: function(data, type, row) {
+                    return `<small class="text-muted text-break">${data.substring(0, 80)}${data.length > 80 ? '...' : ''}</small>`;
+                }
+            },
+            {
+                data: 'user',
+                name: 'user.name',
+                render: function(data, type, row) {
+                    if (data) {
+                        return `
+                            <div>
+                                <strong>${data.name}</strong>
+                                <br><small class="text-muted">${data.email}</small>
+                            </div>
+                        `;
+                    } else {
+                        return `
+                            <span class="text-muted">
+                                <i class="fas fa-user-slash me-1"></i>
+                                Guest User
+                            </span>
+                        `;
+                    }
+                }
+            },
+            {
+                data: 'clicks',
+                name: 'clicks',
+                render: function(data, type, row) {
+                    return `<span class="badge bg-primary rounded-pill">${data}</span>`;
+                }
+            },
+            {
+                data: 'created_at',
+                name: 'created_at',
+                render: function(data, type, row) {
+                    return `<small>${formatDate(data)}</small>`;
+                }
+            },
+            {
+                data: 'expires_at',
+                name: 'expires_at',
+                render: function(data, type, row) {
+                    if (data && new Date(data) < new Date()) {
+                        return '<span class="badge bg-danger">Expired</span>';
+                    } else if (data) {
+                        return '<span class="badge bg-warning">Expires Soon</span>';
+                    } else {
+                        return '<span class="badge bg-success">Active</span>';
+                    }
+                }
+            },
+            {
+                data: 'id',
+                name: 'actions',
+                orderable: false,
+                searchable: false,
+                render: function(data, type, row) {
+                    return `
+                        <div class="action-buttons">
+                            <button class="btn btn-outline-info btn-sm" onclick="viewStats('${row.short_code}')" title="View Stats">
+                                <i class="fas fa-chart-bar"></i>
+                            </button>
+                            <button class="btn btn-outline-warning btn-sm" onclick="editUrl(${data})" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm" onclick="deleteUrl(${data})" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+        ],
+        order: [[5, 'desc']],
+        pageLength: 25,
+        responsive: true,
+        scrollX: true,
+        autoWidth: false,
+        columnDefs: [
+            { 
+                targets: [2, 3], 
+                className: 'd-none d-md-table-cell',
+                responsivePriority: 1
+            },
+            { 
+                targets: [7], 
+                className: 'text-center',
+                width: '120px'
+            },
+            { 
+                targets: [4, 6], 
+                className: 'text-center'
+            }
+        ],
+        language: {
+            search: "Search URLs:",
+            lengthMenu: "Show _MENU_ URLs per page",
+            info: "Showing _START_ to _END_ of _TOTAL_ URLs",
+            infoEmpty: "No URLs found",
+            infoFiltered: "(filtered from _MAX_ total URLs)",
+            paginate: {
+                first: "First",
+                last: "Last",
+                next: "Next",
+                previous: "Previous"
+            }
+        },
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
+             '<"row"<"col-sm-12"tr>>' +
+             '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>'
+    });
 }
 
-function refreshUrls(search = '') {
+function initializeSwiper() {
+    topUrlsSwiper = new Swiper('.topUrlsSwiper', {
+        slidesPerView: 1,
+        spaceBetween: 20,
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+        },
+        autoplay: {
+            delay: 3000,
+            disableOnInteraction: false,
+        },
+        breakpoints: {
+            640: {
+                slidesPerView: 2,
+            },
+            768: {
+                slidesPerView: 3,
+            },
+            1024: {
+                slidesPerView: 4,
+            },
+        },
+    });
+}
+
+function setupRealTimeRefresh() {
+    // Refresh stats every 30 seconds
+    setInterval(function() {
+        refreshStats();
+    }, 30000);
+    
+    // Refresh DataTable every 60 seconds
+    setInterval(function() {
+        if (urlsTable) {
+            urlsTable.ajax.reload(null, false);
+        }
+    }, 60000);
+}
+
+function refreshUrls() {
+    if (urlsTable) {
+        urlsTable.ajax.reload();
+    }
+    Swal.fire({
+        icon: 'success',
+        title: 'Refreshed!',
+        text: 'URL table has been refreshed',
+        timer: 1500,
+        showConfirmButton: false
+    });
+}
+
+function refreshTopUrls() {
     $.ajax({
-        url: '{{ route("admin.urls") }}',
-        data: { search: search },
+        url: '{{ route("admin.top-urls") }}',
         success: function(response) {
             if (response.success) {
-                updateUrlsTable(response.data);
+                updateTopUrlsSlider(response.data);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Refreshed!',
+                    text: 'Top URLs have been refreshed',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
             }
         }
     });
 }
 
-function updateUrlsTable(urls) {
-    const tbody = $('#urlsTableBody');
-    tbody.empty();
+function updateTopUrlsSlider(topUrls) {
+    const slider = $('#topUrlsSlider');
+    slider.empty();
     
-    urls.forEach(url => {
-        const userDisplay = url.user 
-            ? `<div><strong>${url.user.name}</strong><br><small class="text-muted">${url.user.email}</small></div>`
-            : `<span class="text-muted"><i class="fas fa-user-slash me-1"></i>Guest User</span>`;
-            
-        const row = `
-            <tr data-url-id="${url.id}">
-                <td>
-                    <div>
-                        <strong>${url.title || 'Untitled'}</strong>
-                        <br>
-                        <small class="text-muted text-break">${url.original_url.substring(0, 50)}${url.original_url.length > 50 ? '...' : ''}</small>
+    if (topUrls.length > 0) {
+        topUrls.forEach((url, index) => {
+            const slide = `
+                <div class="swiper-slide">
+                    <div class="d-flex align-items-center h-100">
+                        <div class="me-3">
+                            <div class="bg-white bg-opacity-20 rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                <strong>#${index + 1}</strong>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="fw-bold mb-1">${url.title || 'Untitled'}</h6>
+                            <p class="mb-1 opacity-75">${url.clicks} clicks</p>
+                            <small class="opacity-50">
+                                ${url.user ? `by ${url.user.name}` : 'Guest User'}
+                            </small>
+                        </div>
                     </div>
-                </td>
-                <td>
-                    <div class="d-flex align-items-center">
-                        <code class="me-2">${window.location.origin}/${url.short_code}</code>
-                        <button class="btn btn-sm btn-outline-primary copy-btn" 
-                                onclick="copyToClipboard('${window.location.origin}/${url.short_code}', this)">
-                            <i class="fas fa-copy"></i>
-                        </button>
-                    </div>
-                </td>
-                <td>
-                    ${userDisplay}
-                </td>
-                <td>
-                    <span class="badge bg-primary">${url.clicks}</span>
-                </td>
-                <td>
-                    <small>${formatDate(url.created_at)}</small>
-                </td>
-                <td>
-                    <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-info" onclick="viewStats('${url.short_code}')">
-                            <i class="fas fa-chart-bar"></i>
-                        </button>
-                        <button class="btn btn-outline-warning" onclick="editUrl(${url.id})">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-outline-danger" onclick="deleteUrl(${url.id})">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        `;
-        tbody.append(row);
-    });
+                </div>
+            `;
+            slider.append(slide);
+        });
+    } else {
+        slider.append(`
+            <div class="swiper-slide">
+                <div class="text-center">
+                    <i class="fas fa-chart-line mb-3" style="font-size: 2rem; opacity: 0.5;"></i>
+                    <p class="mb-0 opacity-75">No URLs created yet</p>
+                </div>
+            </div>
+        `);
+    }
+    
+    topUrlsSwiper.update();
 }
 
 function viewStats(shortCode) {
@@ -422,9 +817,18 @@ function viewStats(shortCode) {
 
 function editUrl(urlId) {
     // Get URL data and populate modal
-    const row = $(`tr[data-url-id="${urlId}"]`);
-    $('#editUrlId').val(urlId);
-    $('#editUrlModal').modal('show');
+    $.ajax({
+        url: `/admin/urls/${urlId}/edit`,
+        success: function(response) {
+            if (response.success) {
+                const url = response.data;
+                $('#editUrlId').val(url.id);
+                $('#editTitle').val(url.title);
+                $('#editExpiresAt').val(url.expires_at ? url.expires_at.slice(0, 16) : '');
+                $('#editUrlModal').modal('show');
+            }
+        }
+    });
 }
 
 function deleteUrl(urlId) {
@@ -443,10 +847,9 @@ function deleteUrl(urlId) {
                 method: 'DELETE',
                 success: function(response) {
                     if (response.success) {
-                        $(`tr[data-url-id="${urlId}"]`).fadeOut(function() {
-                            $(this).remove();
-                        });
+                        urlsTable.ajax.reload();
                         refreshStats();
+                        refreshTopUrls();
                         Swal.fire('Deleted!', response.message, 'success');
                     }
                 },
@@ -476,8 +879,36 @@ function refreshStats() {
 function exportUrls() {
     Swal.fire({
         title: 'Export URLs',
-        text: 'This feature will be available soon!',
-        icon: 'info'
+        html: `
+            <div class="mb-3">
+                <label for="exportFormat" class="form-label">Choose export format:</label>
+                <select class="form-select" id="exportFormat">
+                    <option value="csv">CSV</option>
+                    <option value="excel">Excel</option>
+                    <option value="json">JSON</option>
+                </select>
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Export',
+        cancelButtonText: 'Cancel',
+        preConfirm: () => {
+            const format = document.getElementById('exportFormat').value;
+            return format;
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const format = result.value;
+            window.location.href = `/admin/urls/export?format=${format}`;
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Export Started!',
+                text: 'Your file will download shortly.',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
     });
 }
 
@@ -490,6 +921,12 @@ function formatDate(dateString) {
         hour: '2-digit',
         minute: '2-digit'
     });
+}
+
+// Auto-refresh when new URLs are created (WebSocket or EventSource can be added here)
+function setupUrlCreatedListener() {
+    // This can be implemented with WebSocket or EventSource for real-time updates
+    // For now, we'll use periodic refresh
 }
 </script>
 @endpush

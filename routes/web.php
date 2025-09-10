@@ -40,9 +40,13 @@ Route::post('/create-short-link', [UrlController::class, 'apiShorten'])->name('u
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/urls', [AdminController::class, 'getUrls'])->name('urls');
+    Route::get('/urls/datatable', [AdminController::class, 'getDatatableUrls'])->name('urls.datatable');
+    Route::get('/urls/{id}/edit', [AdminController::class, 'editUrl'])->name('urls.edit');
     Route::delete('/urls/{id}', [AdminController::class, 'deleteUrl'])->name('urls.delete');
     Route::put('/urls/{id}', [AdminController::class, 'updateUrl'])->name('urls.update');
     Route::get('/stats', [AdminController::class, 'getStats'])->name('stats');
+    Route::get('/top-urls', [AdminController::class, 'getTopUrls'])->name('top-urls');
+    Route::get('/urls/export', [AdminController::class, 'exportUrls'])->name('urls.export');
 });
 
 // Short URL redirect (must be last to avoid conflicts)
