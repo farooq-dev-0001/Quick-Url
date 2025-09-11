@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Dashboard - Quick URL')
-
+ 
 @push('styles')
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css">
@@ -9,7 +9,7 @@
     body {
         background: #f8fafc !important;
     }
-    
+
     .dashboard-header {
         background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
         color: white;
@@ -1148,5 +1148,268 @@ function setupUrlCreatedListener() {
     // This can be implemented with WebSocket or EventSource for real-time updates
     // For now, we'll use periodic refresh
 }
+</script>
+
+<!-- API Usage Documentation -->
+<div class="modal fade" id="apiDocsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-code me-2"></i>
+                    API Documentation - Create Short URLs from External Servers
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Use this API endpoint to create short URLs programmatically from other servers or applications.
+                </div>
+
+                <h6 class="fw-bold mb-3">
+                    <i class="fas fa-link me-2 text-primary"></i>
+                    API Endpoint
+                </h6>
+                <div class="bg-light p-3 rounded mb-4">
+                    <strong>POST</strong> <code>{{ url('/create-short-link') }}</code>
+                    <br><small class="text-muted">Route Name: <code>url.api.shorten</code></small>
+                </div>
+
+                <h6 class="fw-bold mb-3">
+                    <i class="fas fa-cog me-2 text-warning"></i>
+                    Request Parameters
+                </h6>
+                <div class="table-responsive mb-4">
+                    <table class="table table-sm table-striped">
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Type</th>
+                                <th>Required</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>url</code></td>
+                                <td>string</td>
+                                <td><span class="badge bg-danger">Required</span></td>
+                                <td>The original URL to be shortened</td>
+                            </tr>
+                            <tr>
+                                <td><code>title</code></td>
+                                <td>string</td>
+                                <td><span class="badge bg-secondary">Optional</span></td>
+                                <td>Custom title for the URL</td>
+                            </tr>
+                            <tr>
+                                <td><code>custom_code</code></td>
+                                <td>string</td>
+                                <td><span class="badge bg-secondary">Optional</span></td>
+                                <td>Custom short code (if available)</td>
+                            </tr>
+                            <tr>
+                                <td><code>expires_at</code></td>
+                                <td>datetime</td>
+                                <td><span class="badge bg-secondary">Optional</span></td>
+                                <td>Expiration date (YYYY-MM-DD HH:MM:SS)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h6 class="fw-bold mb-3">
+                    <i class="fas fa-code me-2 text-success"></i>
+                    Example Usage
+                </h6>
+
+                <!-- cURL Example -->
+                <div class="mb-4">
+                    <h6 class="fw-bold text-primary">cURL</h6>
+                    <div class="bg-dark text-light p-3 rounded">
+                        <code style="color: #fff;">
+curl -X POST {{ url('/create-short-link') }} \<br>
+&nbsp;&nbsp;-H "Content-Type: application/json" \<br>
+&nbsp;&nbsp;-H "Accept: application/json" \<br>
+&nbsp;&nbsp;-d '{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"url": "https://example.com/very-long-url",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"title": "My Example URL",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"custom_code": "example123",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"expires_at": "2025-12-31 23:59:59"<br>
+&nbsp;&nbsp;}'
+                        </code>
+                    </div>
+                </div>
+
+                <!-- PHP Example -->
+                <div class="mb-4">
+                    <h6 class="fw-bold text-primary">PHP</h6>
+                    <div class="bg-dark text-light p-3 rounded">
+                        <code style="color: #fff;">
+&lt;?php<br>
+$url = '{{ url('/create-short-link') }}';<br>
+$data = [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'url' => 'https://example.com/very-long-url',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'title' => 'My Example URL',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'custom_code' => 'example123',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'expires_at' => '2025-12-31 23:59:59'<br>
+];<br><br>
+$ch = curl_init($url);<br>
+curl_setopt($ch, CURLOPT_POST, 1);<br>
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));<br>
+curl_setopt($ch, CURLOPT_HTTPHEADER, [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'Content-Type: application/json',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'Accept: application/json'<br>
+]);<br>
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);<br><br>
+$response = curl_exec($ch);<br>
+curl_close($ch);<br><br>
+$result = json_decode($response, true);<br>
+echo $result['data']['short_url'];<br>
+?&gt;
+                        </code>
+                    </div>
+                </div>
+
+                <!-- JavaScript Example -->
+                <div class="mb-4">
+                    <h6 class="fw-bold text-primary">JavaScript (Fetch API)</h6>
+                    <div class="bg-dark text-light p-3 rounded">
+                        <code style="color: #fff;">
+fetch('{{ url('/create-short-link') }}', {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;method: 'POST',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;headers: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Content-Type': 'application/json',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Accept': 'application/json'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;body: JSON.stringify({<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;url: 'https://example.com/very-long-url',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;title: 'My Example URL',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;custom_code: 'example123',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;expires_at: '2025-12-31 23:59:59'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;})<br>
+})<br>
+.then(response => response.json())<br>
+.then(data => {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;console.log('Short URL:', data.data.short_url);<br>
+})<br>
+.catch(error => console.error('Error:', error));
+                        </code>
+                    </div>
+                </div>
+
+                <!-- Python Example -->
+                <div class="mb-4">
+                    <h6 class="fw-bold text-primary">Python (requests)</h6>
+                    <div class="bg-dark text-light p-3 rounded">
+                        <code style="color: #fff;">
+import requests<br>
+import json<br><br>
+url = '{{ url('/create-short-link') }}'<br>
+data = {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'url': 'https://example.com/very-long-url',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'title': 'My Example URL',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'custom_code': 'example123',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'expires_at': '2025-12-31 23:59:59'<br>
+}<br><br>
+headers = {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'Content-Type': 'application/json',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'Accept': 'application/json'<br>
+}<br><br>
+response = requests.post(url, data=json.dumps(data), headers=headers)<br>
+result = response.json()<br>
+print(f"Short URL: {result['data']['short_url']}")
+                        </code>
+                    </div>
+                </div>
+
+                <h6 class="fw-bold mb-3">
+                    <i class="fas fa-check-circle me-2 text-success"></i>
+                    Success Response
+                </h6>
+                <div class="bg-light p-3 rounded mb-4">
+                    <code>
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"success": true,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"message": "URL shortened successfully",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"data": {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"id": 123,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"short_url": "{{ url('/') }}/abc123",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"short_code": "abc123",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"original_url": "https://example.com/very-long-url",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"title": "My Example URL",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"clicks": 0,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"expires_at": "2025-12-31 23:59:59",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"created_at": "2025-09-11 12:00:00"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}
+                    </code>
+                </div>
+
+                <h6 class="fw-bold mb-3">
+                    <i class="fas fa-exclamation-triangle me-2 text-danger"></i>
+                    Error Response
+                </h6>
+                <div class="bg-light p-3 rounded mb-4">
+                    <code>
+{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"success": false,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"message": "The url field is required.",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"errors": {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"url": ["The url field is required."]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+}
+                    </code>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="copyApiDocs()">
+                    <i class="fas fa-copy me-2"></i>Copy cURL Example
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- API Docs Button (can be placed in header buttons) -->
+<script>
+function showApiDocs() {
+    $('#apiDocsModal').modal('show');
+}
+
+function copyApiDocs() {
+    const curlExample = `curl -X POST {{ url('/create-short-link') }} \\
+  -H "Content-Type: application/json" \\
+  -H "Accept: application/json" \\
+  -d '{
+    "url": "https://example.com/very-long-url",
+    "title": "My Example URL",
+    "custom_code": "example123",
+    "expires_at": "2025-12-31 23:59:59"
+  }'`;
+  
+    navigator.clipboard.writeText(curlExample).then(function() {
+        Swal.fire({
+            icon: 'success',
+            title: 'Copied!',
+            text: 'cURL example copied to clipboard',
+            timer: 1500,
+            showConfirmButton: false
+        });
+    });
+}
+
+// Add API docs button to header buttons
+$(document).ready(function() {
+    const apiButton = `
+        <button class="btn btn-outline-info btn-sm shadow-sm" onclick="showApiDocs()">
+            <i class="fas fa-code me-2"></i>
+            API Docs
+        </button>
+    `;
+    $('.header-buttons').prepend(apiButton);
+});
 </script>
 @endpush
