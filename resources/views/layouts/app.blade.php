@@ -403,12 +403,12 @@
                                 Login
                             </a>
                         </li>
-                        <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('register') ? 'active' : '' }}" href="{{ route('register') }}">
                                 <i class="fas fa-user-plus me-1"></i>
                                 Register
                             </a>
-                        </li>
+                        </li> --}}
                     @endauth
                 </ul>
             </div>

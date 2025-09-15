@@ -19,7 +19,7 @@ class UrlController extends Controller
         $request->validate([
             'url' => 'required|url|max:2048',
             'title' => 'nullable|string|max:255',
-            'prefix' => 'nullable|string|max:20|regex:/^[a-zA-Z0-9_-]+$/',
+            'prefix' => 'nullable|string|max:50|regex:/^[a-zA-Z0-9_-]+$/',
             'expires_at' => 'nullable|date|after:now'
         ]);
 
@@ -71,10 +71,14 @@ class UrlController extends Controller
         }
 
         // Generate unique short code for new URL
-        do {
-            $randomCode = Str::random(6);
-            $shortCode = $request->prefix ? $request->prefix . '-' . $randomCode : $randomCode;
-        } while (Url::where('short_code', $shortCode)->exists());
+        $shortCode = $this->generateUniqueShortCode($request->prefix);
+
+        if (!$shortCode) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unable to generate unique short code. Please try again.',
+            ], 500);
+        }
 
         // Get page title if not provided
         $title = $request->title;
@@ -167,67 +171,167 @@ class UrlController extends Controller
     }
 
     /**
+     * Generate a unique short code with multiple strategies
+     */
+    private function generateUniqueShortCode($prefix = null)
+    {
+        $strategies = [
+            // Strategy 1: 6 character alphanumeric
+            function ($prefix) {
+                return $this->tryGenerateCode($prefix, 6, 'alphanumeric', 50);
+            },
+            // Strategy 2: 7 character alphanumeric
+            function ($prefix) {
+                return $this->tryGenerateCode($prefix, 7, 'alphanumeric', 30);
+            },
+            // Strategy 3: 8 character alphanumeric
+            function ($prefix) {
+                return $this->tryGenerateCode($prefix, 8, 'alphanumeric', 20);
+            },
+            // Strategy 4: 6 character with numbers and letters (no ambiguous chars)
+            function ($prefix) {
+                return $this->tryGenerateCode($prefix, 6, 'safe', 30);
+            },
+            // Strategy 5: Timestamp-based with random suffix
+            function ($prefix) {
+                return $this->tryGenerateCode($prefix, null, 'timestamp', 10);
+            }
+        ];
+
+        foreach ($strategies as $strategy) {
+            $shortCode = $strategy($prefix);
+            if ($shortCode) {
+                return $shortCode;
+            }
+        }
+
+        return null; // All strategies failed
+    }
+
+    /**
+     * Try to generate a unique code with specific parameters
+     */
+    private function tryGenerateCode($prefix, $length, $type, $maxAttempts)
+    {
+        for ($i = 0; $i < $maxAttempts; $i++) {
+            $randomCode = $this->generateRandomCode($length, $type);
+            $shortCode = $prefix ? $prefix . '-' . $randomCode : $randomCode;
+
+            // Check if this code is unique
+            if (!Url::where('short_code', $shortCode)->exists()) {
+                return $shortCode;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Generate random code based on type
+     */
+    private function generateRandomCode($length, $type)
+    {
+        switch ($type) {
+            case 'alphanumeric':
+                return Str::random($length);
+
+            case 'safe':
+                // Exclude ambiguous characters: 0, O, 1, I, l
+                $chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+                $result = '';
+                for ($i = 0; $i < $length; $i++) {
+                    $result .= $chars[random_int(0, strlen($chars) - 1)];
+                }
+                return $result;
+
+            case 'timestamp':
+                // Use base36 encoded timestamp + random suffix
+                $timestamp = base_convert(time(), 10, 36);
+                $suffix = substr(str_shuffle('abcdefghijklmnopqrstuvwxyz0123456789'), 0, 3);
+                return $timestamp . $suffix;
+
+            default:
+                return Str::random($length ?: 6);
+        }
+    }
+    /**
      * API endpoint to create short URL (returns only the short link)
      */
     public function apiShorten(Request $request)
     {
-        $request->validate([
-            'url' => 'required|url|max:2048',
-            'title' => 'nullable|string|max:255',
-            'prefix' => 'nullable|string|max:20|regex:/^[a-zA-Z0-9_-]+$/',
-            'expires_at' => 'nullable|date|after:now'
-        ]);
-
-        // Check if URL already exists
-        $query = Url::where('original_url', $request->url);
-
-        if (Auth::check()) {
-            // For authenticated users, check by user_id
-            $query->where('user_id', Auth::id());
-        } else {
-            // For guest users, check by IP address
-            $query->where(function ($q) use ($request) {
-                $q->whereNull('user_id')
-                    ->where('created_ip', $request->ip());
-            });
-        }
-
-        $existingUrl = $query->first();
-
-        if ($existingUrl) {
-            // Return existing short URL
-            return response()->json([
-                'success' => true,
-                'short_url' => $existingUrl->getShortUrl(),
-                'message' => 'URL already exists, returning existing short link'
+        try {
+            // Validate input
+            $request->validate([
+                'url' => 'required|url|max:2048',
+                'title' => 'nullable|string|max:255',
+                'prefix' => 'nullable|string|max:50|regex:/^[a-zA-Z0-9_-]+$/',
+                'expires_at' => 'nullable|date|after:now'
             ]);
+
+            // Check if URL already exists
+            $query = Url::where('original_url', $request->url);
+
+            if (Auth::check()) {
+                // For authenticated users, check by user_id
+                $query->where('user_id', Auth::id());
+            } else {
+                // For guest users, check by IP address
+                $query->where(function ($q) use ($request) {
+                    $q->whereNull('user_id')
+                        ->where('created_ip', $request->ip());
+                });
+            }
+
+            $existingUrl = $query->first();
+
+            if ($existingUrl) {
+                // Return only the short URL for existing URLs
+                return response($existingUrl->getShortUrl(), 200)
+                    ->header('Content-Type', 'text/plain');
+            }
+
+            // Generate unique short code for new URL
+            $shortCode = $this->generateUniqueShortCode($request->prefix);
+
+            if (!$shortCode) {
+                throw new \Exception('Unable to generate unique short code. Please try again.');
+            }
+
+            // Get page title if not provided
+            $title = $request->title;
+            if (!$title) {
+                try {
+                    $title = $this->extractTitle($request->url);
+                } catch (\Exception $e) {
+                    $title = parse_url($request->url, PHP_URL_HOST) ?: 'Shortened URL';
+                }
+            }
+
+            // Create new URL record
+            $url = Url::create([
+                'original_url' => $request->url,
+                'short_code' => $shortCode,
+                'title' => $title,
+                'user_id' => Auth::id(),
+                'created_ip' => $request->ip(),
+                'expires_at' => $request->expires_at
+            ]);
+
+            if (!$url) {
+                throw new \Exception('Failed to create URL record in database');
+            }
+
+            // Return only the short URL
+            return response($url->getShortUrl(), 200)
+                ->header('Content-Type', 'text/plain');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Return validation errors as plain text
+            $errors = collect($e->errors())->flatten()->implode('; ');
+            return response('Validation Error: ' . $errors, 400)
+                ->header('Content-Type', 'text/plain');
+        } catch (\Exception $e) {
+            // Return any other errors as plain text
+            return response('Error: ' . $e->getMessage(), 500)
+                ->header('Content-Type', 'text/plain');
         }
-
-        // Generate unique short code for new URL
-        do {
-            $randomCode = Str::random(6);
-            $shortCode = $request->prefix ? $request->prefix . '-' . $randomCode : $randomCode;
-        } while (Url::where('short_code', $shortCode)->exists());
-
-        // Get page title if not provided
-        $title = $request->title;
-        if (!$title) {
-            $title = $this->extractTitle($request->url);
-        }
-
-        $url = Url::create([
-            'original_url' => $request->url,
-            'short_code' => $shortCode,
-            'title' => $title,
-            'user_id' => Auth::id(),
-            'created_ip' => $request->ip(),
-            'expires_at' => $request->expires_at
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'short_url' => $url->getShortUrl(),
-            'message' => 'Short URL created successfully'
-        ]);
     }
 }

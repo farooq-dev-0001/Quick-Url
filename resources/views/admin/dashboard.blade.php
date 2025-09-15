@@ -1204,10 +1204,10 @@ function setupUrlCreatedListener() {
                                 <td>Custom title for the URL</td>
                             </tr>
                             <tr>
-                                <td><code>custom_code</code></td>
+                                <td><code>prefix</code></td>
                                 <td>string</td>
                                 <td><span class="badge bg-secondary">Optional</span></td>
-                                <td>Custom short code (if available)</td>
+                                <td>Custom prefix for the short code</td>
                             </tr>
                             <tr>
                                 <td><code>expires_at</code></td>
@@ -1231,13 +1231,17 @@ function setupUrlCreatedListener() {
                         <code style="color: #fff;">
 curl -X POST {{ url('/create-short-link') }} \<br>
 &nbsp;&nbsp;-H "Content-Type: application/json" \<br>
-&nbsp;&nbsp;-H "Accept: application/json" \<br>
+&nbsp;&nbsp;-H "Accept: text/plain" \<br>
 &nbsp;&nbsp;-d '{<br>
 &nbsp;&nbsp;&nbsp;&nbsp;"url": "https://example.com/very-long-url",<br>
 &nbsp;&nbsp;&nbsp;&nbsp;"title": "My Example URL",<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"custom_code": "example123",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"prefix": "example123",<br>
 &nbsp;&nbsp;&nbsp;&nbsp;"expires_at": "2025-12-31 23:59:59"<br>
-&nbsp;&nbsp;}'
+&nbsp;&nbsp;}'<br><br>
+# Success Response (Status 200):<br>
+# {{ url('/') }}/example123-abc456<br><br>
+# Error Response (Status 400/500):<br>
+# Validation Error: The url field is required.
                         </code>
                     </div>
                 </div>
@@ -1252,7 +1256,7 @@ $url = '{{ url('/create-short-link') }}';<br>
 $data = [<br>
 &nbsp;&nbsp;&nbsp;&nbsp;'url' => 'https://example.com/very-long-url',<br>
 &nbsp;&nbsp;&nbsp;&nbsp;'title' => 'My Example URL',<br>
-&nbsp;&nbsp;&nbsp;&nbsp;'custom_code' => 'example123',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'prefix' => 'example123',<br>
 &nbsp;&nbsp;&nbsp;&nbsp;'expires_at' => '2025-12-31 23:59:59'<br>
 ];<br><br>
 $ch = curl_init($url);<br>
@@ -1260,13 +1264,17 @@ curl_setopt($ch, CURLOPT_POST, 1);<br>
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));<br>
 curl_setopt($ch, CURLOPT_HTTPHEADER, [<br>
 &nbsp;&nbsp;&nbsp;&nbsp;'Content-Type: application/json',<br>
-&nbsp;&nbsp;&nbsp;&nbsp;'Accept: application/json'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'Accept: text/plain'<br>
 ]);<br>
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);<br><br>
 $response = curl_exec($ch);<br>
+$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);<br>
 curl_close($ch);<br><br>
-$result = json_decode($response, true);<br>
-echo $result['data']['short_url'];<br>
+if ($httpCode === 200) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo "Short URL: " . $response; // Direct URL<br>
+} else {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo "Error: " . $response; // Error message<br>
+}<br>
 ?&gt;
                         </code>
                     </div>
@@ -1281,45 +1289,26 @@ fetch('{{ url('/create-short-link') }}', {<br>
 &nbsp;&nbsp;&nbsp;&nbsp;method: 'POST',<br>
 &nbsp;&nbsp;&nbsp;&nbsp;headers: {<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Content-Type': 'application/json',<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Accept': 'application/json'<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Accept': 'text/plain'<br>
 &nbsp;&nbsp;&nbsp;&nbsp;},<br>
 &nbsp;&nbsp;&nbsp;&nbsp;body: JSON.stringify({<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;url: 'https://example.com/very-long-url',<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;title: 'My Example URL',<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;custom_code: 'example123',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;prefix: 'example123',<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;expires_at: '2025-12-31 23:59:59'<br>
 &nbsp;&nbsp;&nbsp;&nbsp;})<br>
 })<br>
-.then(response => response.json())<br>
-.then(data => {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;console.log('Short URL:', data.data.short_url);<br>
+.then(response => {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if (response.ok) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return response.text(); // Get URL as text<br>
+&nbsp;&nbsp;&nbsp;&nbsp;} else {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return response.text().then(err => Promise.reject(err));<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+})<br>
+.then(shortUrl => {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;console.log('Short URL:', shortUrl);<br>
 })<br>
 .catch(error => console.error('Error:', error));
-                        </code>
-                    </div>
-                </div>
-
-                <!-- Python Example -->
-                <div class="mb-4">
-                    <h6 class="fw-bold text-primary">Python (requests)</h6>
-                    <div class="bg-dark text-light p-3 rounded">
-                        <code style="color: #fff;">
-import requests<br>
-import json<br><br>
-url = '{{ url('/create-short-link') }}'<br>
-data = {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;'url': 'https://example.com/very-long-url',<br>
-&nbsp;&nbsp;&nbsp;&nbsp;'title': 'My Example URL',<br>
-&nbsp;&nbsp;&nbsp;&nbsp;'custom_code': 'example123',<br>
-&nbsp;&nbsp;&nbsp;&nbsp;'expires_at': '2025-12-31 23:59:59'<br>
-}<br><br>
-headers = {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;'Content-Type': 'application/json',<br>
-&nbsp;&nbsp;&nbsp;&nbsp;'Accept': 'application/json'<br>
-}<br><br>
-response = requests.post(url, data=json.dumps(data), headers=headers)<br>
-result = response.json()<br>
-print(f"Short URL: {result['data']['short_url']}")
                         </code>
                     </div>
                 </div>
@@ -1329,22 +1318,11 @@ print(f"Short URL: {result['data']['short_url']}")
                     Success Response
                 </h6>
                 <div class="bg-light p-3 rounded mb-4">
-                    <code>
-{<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"success": true,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"message": "URL shortened successfully",<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"data": {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"id": 123,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"short_url": "{{ url('/') }}/abc123",<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"short_code": "abc123",<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"original_url": "https://example.com/very-long-url",<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"title": "My Example URL",<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"clicks": 0,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"expires_at": "2025-12-31 23:59:59",<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"created_at": "2025-09-11 12:00:00"<br>
-&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-}
-                    </code>
+                    <strong>Response Type:</strong> Plain Text (text/plain)<br>
+                    <strong>Status Code:</strong> 200<br>
+                    <strong>Content:</strong> The shortened URL only<br><br>
+                    <strong>Example Response:</strong><br>
+                    <code>{{ url('/') }}/abc123</code>
                 </div>
 
                 <h6 class="fw-bold mb-3">
@@ -1352,15 +1330,12 @@ print(f"Short URL: {result['data']['short_url']}")
                     Error Response
                 </h6>
                 <div class="bg-light p-3 rounded mb-4">
-                    <code>
-{<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"success": false,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"message": "The url field is required.",<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"errors": {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"url": ["The url field is required."]<br>
-&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-}
-                    </code>
+                    <strong>Response Type:</strong> Plain Text (text/plain)<br>
+                    <strong>Status Codes:</strong> 400 (Validation Error), 500 (Server Error)<br><br>
+                    <strong>Validation Error Example:</strong><br>
+                    <code>Validation Error: The url field is required.</code><br><br>
+                    <strong>Server Error Example:</strong><br>
+                    <code>Error: Unable to generate unique short code after 100 attempts</code>
                 </div>
             </div>
             <div class="modal-footer">
@@ -1382,11 +1357,11 @@ function showApiDocs() {
 function copyApiDocs() {
     const curlExample = `curl -X POST {{ url('/create-short-link') }} \\
   -H "Content-Type: application/json" \\
-  -H "Accept: application/json" \\
+  -H "Accept: text/plain" \\
   -d '{
     "url": "https://example.com/very-long-url",
     "title": "My Example URL",
-    "custom_code": "example123",
+    "prefix": "example123",
     "expires_at": "2025-12-31 23:59:59"
   }'`;
   
