@@ -51,13 +51,13 @@
                         </div>
                     </form>
                     
-                    <hr class="my-4">
+                    {{-- <hr class="my-4"> --}}
                     
-                    <div class="text-center">
+                    {{-- <div class="text-center">
                         <p class="mb-0">Don't have an account? 
                             <a href="{{ route('register') }}" class="text-primary fw-semibold">Sign up here</a>
                         </p>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
             
