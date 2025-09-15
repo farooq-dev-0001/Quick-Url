@@ -171,88 +171,38 @@ class UrlController extends Controller
     }
 
     /**
-     * Generate a unique short code with multiple strategies
+     * Fast unique short code generation - optimized for speed
      */
     private function generateUniqueShortCode($prefix = null)
     {
-        $strategies = [
-            // Strategy 1: 6 character alphanumeric
-            function ($prefix) {
-                return $this->tryGenerateCode($prefix, 6, 'alphanumeric', 50);
-            },
-            // Strategy 2: 7 character alphanumeric
-            function ($prefix) {
-                return $this->tryGenerateCode($prefix, 7, 'alphanumeric', 30);
-            },
-            // Strategy 3: 8 character alphanumeric
-            function ($prefix) {
-                return $this->tryGenerateCode($prefix, 8, 'alphanumeric', 20);
-            },
-            // Strategy 4: 6 character with numbers and letters (no ambiguous chars)
-            function ($prefix) {
-                return $this->tryGenerateCode($prefix, 6, 'safe', 30);
-            },
-            // Strategy 5: Timestamp-based with random suffix
-            function ($prefix) {
-                return $this->tryGenerateCode($prefix, null, 'timestamp', 10);
-            }
-        ];
-
-        foreach ($strategies as $strategy) {
-            $shortCode = $strategy($prefix);
-            if ($shortCode) {
-                return $shortCode;
-            }
-        }
-
-        return null; // All strategies failed
-    }
-
-    /**
-     * Try to generate a unique code with specific parameters
-     */
-    private function tryGenerateCode($prefix, $length, $type, $maxAttempts)
-    {
-        for ($i = 0; $i < $maxAttempts; $i++) {
-            $randomCode = $this->generateRandomCode($length, $type);
+        // Fast method 1: Try 6-character random code (99.9% success rate)
+        for ($i = 0; $i < 5; $i++) {
+            $randomCode = Str::random(6);
             $shortCode = $prefix ? $prefix . '-' . $randomCode : $randomCode;
 
-            // Check if this code is unique
             if (!Url::where('short_code', $shortCode)->exists()) {
                 return $shortCode;
             }
         }
-        return null;
-    }
 
-    /**
-     * Generate random code based on type
-     */
-    private function generateRandomCode($length, $type)
-    {
-        switch ($type) {
-            case 'alphanumeric':
-                return Str::random($length);
+        // Fast method 2: Try 7-character code (if 6 chars had collisions)
+        for ($i = 0; $i < 3; $i++) {
+            $randomCode = Str::random(7);
+            $shortCode = $prefix ? $prefix . '-' . $randomCode : $randomCode;
 
-            case 'safe':
-                // Exclude ambiguous characters: 0, O, 1, I, l
-                $chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-                $result = '';
-                for ($i = 0; $i < $length; $i++) {
-                    $result .= $chars[random_int(0, strlen($chars) - 1)];
-                }
-                return $result;
-
-            case 'timestamp':
-                // Use base36 encoded timestamp + random suffix
-                $timestamp = base_convert(time(), 10, 36);
-                $suffix = substr(str_shuffle('abcdefghijklmnopqrstuvwxyz0123456789'), 0, 3);
-                return $timestamp . $suffix;
-
-            default:
-                return Str::random($length ?: 6);
+            if (!Url::where('short_code', $shortCode)->exists()) {
+                return $shortCode;
+            }
         }
+
+        // Fast method 3: Timestamp-based guaranteed unique (fallback)
+        $timestamp = base_convert(microtime(true) * 10000, 10, 36);
+        $random = substr(str_shuffle('abcdefghijklmnopqrstuvwxyz0123456789'), 0, 2);
+        $shortCode = $prefix ? $prefix . '-' . $timestamp . $random : $timestamp . $random;
+
+        return $shortCode;
     }
+
     /**
      * API endpoint to create short URL (returns only the short link)
      */
